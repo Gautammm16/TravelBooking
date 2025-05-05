@@ -1,0 +1,141 @@
+### REGISTER - New User
+POST http://localhost:5000/api/v1/users/register
+Content-Type: application/json
+
+{
+  "firstName": "GG",
+  "lastName": "GGGGG",
+  "email": "gtm@example.com",
+  "password": "gtmgtmgtm",
+  "passwordConfirm": "gtmgtmgtm"
+}
+
+###
+
+### LOGIN - Get Token
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email": "gtm@example.com",
+  "password": "gtmgtmgtm"
+}
+
+###
+
+GET http://localhost:5000/api/v1/users/displayall 
+
+###
+
+# Set token after login
+@token = Bearer YOUR_JWT_TOKEN_HERE
+
+############################################################
+### BOOKINGS ROUTES
+############################################################
+
+### CREATE Booking
+POST http://localhost:5000/api/v1/bookings
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "tour": "TOUR_ID_HERE",
+  "price": 1500,
+  "date": "2025-06-01"
+}
+
+###
+
+### GET My Bookings
+GET http://localhost:5000/api/v1/bookings/my-bookings
+Authorization: {{token}}
+
+###
+
+### ADMIN: GET All Bookings
+GET http://localhost:5000/api/v1/bookings
+Authorization: {{token}}
+
+###
+
+### ADMIN: DELETE Booking
+DELETE http://localhost:5000/api/v1/bookings/BOOKING_ID_HERE
+Authorization: {{token}}
+
+############################################################
+### TOURS ROUTES
+############################################################
+
+### CREATE Tour (Admin)
+POST http://localhost:5000/api/v1/tours
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "name": "Paris Explorer",
+  "duration": 7,
+  "price": 1999,
+  "location": "Paris",
+  "summary": "Explore the city of lights",
+  "description": "A week-long adventure in Paris visiting historical sites and cafes."
+}
+
+###
+
+### GET All Tours
+GET http://localhost:5000/api/v1/tours
+
+###
+
+### GET Tour by ID
+GET http://localhost:5000/api/v1/tours/TOUR_ID_HERE
+
+###
+
+### UPDATE Tour by ID (Admin)
+PATCH http://localhost:5000/api/v1/tours/TOUR_ID_HERE
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "price": 1799,
+  "duration": 5
+}
+
+###
+
+### DELETE Tour by ID (Admin)
+DELETE http://localhost:5000/api/v1/tours/TOUR_ID_HERE
+Authorization: {{token}}
+
+############################################################
+### REVIEWS ROUTES
+############################################################
+
+### CREATE Review (User)
+POST http://localhost:5000/api/v1/reviews
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "review": "Amazing tour with great guide!",
+  "rating": 5,
+  "tour": "TOUR_ID_HERE"
+}
+
+###
+
+### GET All Reviews
+GET http://localhost:5000/api/v1/reviews
+
+###
+
+### GET Reviews for a Tour
+GET http://localhost:5000/api/v1/tours/TOUR_ID_HERE/reviews
+
+###
+
+### DELETE Review by ID (Admin or Owner)
+DELETE http://localhost:5000/api/v1/reviews/REVIEW_ID_HERE
+Authorization: {{token}}
