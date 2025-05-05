@@ -6,8 +6,7 @@ import userRoutes from './routes/userRoutes.js';
 import tourRouter from './routes/tourRoutes.js';
 import reviewRouter from './routes/reviewRoutes.js';
 import bookingRouter from './routes/bookingRoutes.js';
-import userRouter from './routes/userRoutes.js';
-
+import paymentRoutes from "./routes/paymentRoutes.js";
 dotenv.config();
 connectDB();
 
@@ -19,7 +18,7 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/tours/:tourId/reviews', reviewRouter);
 app.use('/api/v1/bookings', bookingRouter);
-
+app.use('/api/payments', paymentRoutes);
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
