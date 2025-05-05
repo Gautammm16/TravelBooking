@@ -3,22 +3,35 @@ POST http://localhost:5000/api/v1/users/register
 Content-Type: application/json
 
 {
-  "firstName": "GG",
-  "lastName": "GGGGG",
-  "email": "gtm@example.com",
+  "firstName": "gautam",
+  "lastName": "J",
+  "email": "gautam@example.com",
   "password": "gtmgtmgtm",
   "passwordConfirm": "gtmgtmgtm"
+  
 }
 
+
+
+
 ###
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email": "gautam@example.com",
+  "password": "gtmgtmgtm"
+}
+
+
 
 ### LOGIN - Get Token
 POST http://localhost:5000/api/v1/users/login
 Content-Type: application/json
 
 {
-  "email": "gtm@example.com",
-  "password": "gtmgtmgtm"
+  "email": "admin@example.com",
+  "password": "admin123"
 }
 
 ###
@@ -28,7 +41,7 @@ GET http://localhost:5000/api/v1/users/displayall
 ###
 
 # Set token after login
-@token = Bearer YOUR_JWT_TOKEN_HERE
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTg4OWI4NjUzMDZiNzlmODQzOGRiNSIsImlhdCI6MTc0NjQzOTA2MiwiZXhwIjoxNzQ5MDMxMDYyfQ.GUl-Dv52-qTH6EN7t-Q6aG8rp-9AoN0rN5zGwWlIBaM
 
 ############################################################
 ### BOOKINGS ROUTES
@@ -40,9 +53,12 @@ Content-Type: application/json
 Authorization: {{token}}
 
 {
-  "tour": "TOUR_ID_HERE",
+  "tour": "661f8e3c4f1c2a8a1a9d3a7b",
   "price": 1500,
-  "date": "2025-06-01"
+  "startDate": "2025-06-01",
+   "paymentMethod": "credit-card",
+   "price":1500,
+   "participants":1
 }
 
 ###
@@ -60,7 +76,7 @@ Authorization: {{token}}
 ###
 
 ### ADMIN: DELETE Booking
-DELETE http://localhost:5000/api/v1/bookings/BOOKING_ID_HERE
+DELETE http://localhost:5000/api/v1/bookings/681889f365306b79f8438dd4
 Authorization: {{token}}
 
 ############################################################
@@ -139,3 +155,116 @@ GET http://localhost:5000/api/v1/tours/TOUR_ID_HERE/reviews
 ### DELETE Review by ID (Admin or Owner)
 DELETE http://localhost:5000/api/v1/reviews/REVIEW_ID_HERE
 Authorization: {{token}}
+
+
+###
+
+
+### 1. REGISTER USER
+POST http://localhost:5000/api/v1/users/register
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john@example.com",
+  "password": "test1234",
+  "passwordConfirm": "test1234"
+}
+
+### 2. LOGIN USER
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "test1234"
+}
+
+### 3. GET ALL TOURS
+GET http://localhost:5000/api/v1/tours
+
+### 4. CREATE TOUR (Admin Only - Replace token)
+POST http://localhost:5000/api/v1/tours
+Content-Type: application/json
+Authorization: Bearer your_admin_token_here
+
+{
+  "name": "Everest Base Camp",
+  "duration": 14,
+  "maxGroupSize": 10,
+  "difficulty": "difficult",
+  "price": 2000,
+  "summary": "Epic Everest adventure",
+  "country": "Nepal"
+}
+
+### 5. GET SINGLE TOUR (Replace :id with actual tour ID)
+GET http://localhost:5000/api/v1/tours/663b32e55f1d8a9e4f7a3b1c
+
+### 6. CREATE REVIEW (Replace token and tour ID)
+POST http://localhost:5000/api/v1/tours/663b32e55f1d8a9e4f7a3b1c/reviews
+Content-Type: application/json
+Authorization: Bearer your_user_token_here
+
+{
+  "review": "Life-changing experience!",
+  "rating": 5
+}
+
+### 7. CREATE BOOKING (Replace token and tour ID)
+POST http://localhost:5000/api/v1/bookings
+Content-Type: application/json
+Authorization: Bearer your_user_token_here
+
+{
+  "tour": "663b32e55f1d8a9e4f7a3b1c",
+  "price": 2000,
+  "participants": 2
+}
+
+### 8. GET USER PROFILE
+GET http://localhost:5000/api/v1/users/me
+Authorization: Bearer your_user_token_here
+
+### 9. UPDATE USER PROFILE
+PATCH http://localhost:5000/api/v1/users/update-me
+Content-Type: application/json
+Authorization: Bearer your_user_token_here
+
+{
+  "firstName": "Johnny"
+}
+
+### 10. DELETE USER (Replace token)
+DELETE http://localhost:5000/api/v1/users/delete-me
+Authorization: Bearer your_user_token_here
+
+### 11. INVALID LOGIN TEST
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email": "john@example.com",
+  "password": "wrongpassword"
+}
+
+### 12. DUPLICATE REGISTRATION TEST
+POST http://localhost:5000/api/v1/users/register
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john@example.com",
+  "password": "test1234",
+  "passwordConfirm": "test1234"
+}
+
+### 13. UNAUTHORIZED TOUR CREATE TEST
+POST http://localhost:5000/api/v1/tours
+Content-Type: application/json
+
+{
+  "name": "Unauthorized Tour"
+}

@@ -56,6 +56,7 @@ export const register = async (req, res) => {
       email,
       password,
       passwordConfirm
+      
     });
 
     // Generate JWT

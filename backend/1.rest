@@ -1,0 +1,119 @@
+### Register a new user
+POST http://localhost:5000/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "email": "user1@example.com",
+  "password": "123456"
+}
+
+###
+
+### Login user (get token)
+POST http://localhost:5000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "user1@example.com",
+  "password": "123456"
+}
+
+###
+
+# Replace {{token}} with the token from the login response
+
+
+
+### Create a Tour (Admin only)
+POST http://localhost:5000/api/v1/tours
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Paris Explorer",
+  "duration": 7,
+  "price": 1999,
+  "location": "Paris",
+  "summary": "Explore the city of lights",
+  "description": "A week-long adventure in Paris visiting historical sites and cafes."
+}
+
+###
+
+### Get all tours
+GET http://localhost:5000/api/v1/tours
+
+###
+
+### Get a tour by ID (replace with a real ID)
+GET http://localhost:5000/api/v1/tours/TOUR_ID_HERE
+
+###
+
+### Create a Booking (User)
+POST http://localhost:5000/api/v1/bookings
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "tour": "TOUR_ID_HERE",
+  "startDate": "2025-06-01",
+  "participants": 2,
+  "paymentMethod": "credit_card"
+}
+
+###
+
+### Get My Bookings (User)
+GET http://localhost:5000/api/v1/bookings/my-bookings
+Authorization: Bearer {{token}}
+
+###
+
+### Get All Bookings (Admin only)
+GET http://localhost:5000/api/v1/bookings
+Authorization: Bearer {{token}}
+
+###
+
+### Delete a Booking by ID (Admin only)
+DELETE http://localhost:5000/api/v1/bookings/BOOKING_ID_HERE
+Authorization: Bearer {{token}}
+
+###
+
+### Create Review (User)
+POST http://localhost:5000/api/v1/tours/TOUR_ID_HERE/reviews
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "rating": 4,
+  "review": "Great tour experience!"
+}
+
+###
+
+### Get All Reviews for a Tour
+GET http://localhost:5000/api/v1/tours/TOUR_ID_HERE/reviews
+Authorization: Bearer {{token}}
+
+###
+
+### Update Review by ID
+PATCH http://localhost:5000/api/v1/tours/TOUR_ID_HERE/reviews/REVIEW_ID_HERE
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "review": "Updated review text",
+  "rating": 5
+}
+
+###
+
+### Delete Review by ID
+DELETE http://localhost:5000/api/v1/tours/TOUR_ID_HERE/reviews/REVIEW_ID_HERE
+Authorization: Bearer {{token}}
+
