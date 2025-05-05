@@ -8,7 +8,6 @@ Content-Type: application/json
   "email": "gautam@example.com",
   "password": "gtmgtmgtm",
   "passwordConfirm": "gtmgtmgtm"
-  
 }
 
 
@@ -41,7 +40,7 @@ GET http://localhost:5000/api/v1/users/displayall
 ###
 
 # Set token after login
-@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTg4OWI4NjUzMDZiNzlmODQzOGRiNSIsImlhdCI6MTc0NjQzOTA2MiwiZXhwIjoxNzQ5MDMxMDYyfQ.GUl-Dv52-qTH6EN7t-Q6aG8rp-9AoN0rN5zGwWlIBaM
+@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTg4OGQ3ZTZjMzdkOTgyNGE0MjNiMiIsImlhdCI6MTc0NjQzOTM1NywiZXhwIjoxNzQ5MDMxMzU3fQ.5eJg5r-62P4v5PjKLR9EP96k33-P0IWkZ_JPFFMhrZU
 
 ############################################################
 ### BOOKINGS ROUTES
@@ -92,7 +91,7 @@ Authorization: {{token}}
   "name": "Paris Explorer",
   "duration": 7,
   "price": 1999,
-  "location": "Paris",
+  "country": "Paris",
   "summary": "Explore the city of lights",
   "description": "A week-long adventure in Paris visiting historical sites and cafes."
 }
