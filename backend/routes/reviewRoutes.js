@@ -1,23 +1,22 @@
+// reviewRoutes.js
 import express from 'express';
 import {
-  createReview,
   getAllReviews,
+  createReview,
+  getReview,
   updateReview,
   deleteReview
 } from '../controllers/reviewController.js';
-import { protect } from '../middleware/authMiddleware.js';
+import { protect, restrictTo } from '../middleware/authMiddleware.js';
 
 const router = express.Router({ mergeParams: true });
 
-router.use(protect);
-
-router
-  .route('/')
+router.route('/')
   .get(getAllReviews)
   .post(protect, createReview);
 
-router
-  .route('/:id')
+router.route('/:reviewId')
+  .get(getReview)
   .patch(protect, updateReview)
   .delete(protect, deleteReview);
 

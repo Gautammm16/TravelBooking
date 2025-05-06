@@ -122,4 +122,6 @@ tourSchema.virtual('reviews', {
   localField: '_id'
 });
 
+tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
 export default mongoose.model('Tour',tourSchema)

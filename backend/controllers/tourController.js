@@ -46,13 +46,12 @@ export const createTour = async (req, res) => {
 
 export const getTour = async (req, res) => {
   try {
-    const tour = await Tour.findById(req.params.id).populate('reviews');
-
+    // Change from req.params.id to req.params.tourId
+    const tour = await Tour.findById(req.params.tourId).populate('reviews'); 
+    
     res.status(200).json({
       status: 'success',
-      data: {
-        tour
-      }
+      data: { tour }
     });
   } catch (err) {
     res.status(404).json({
@@ -62,9 +61,11 @@ export const getTour = async (req, res) => {
   }
 };
 
+
 export const updateTour = async (req, res) => {
   try {
-    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+
+    const tour = await Tour.findByIdAndUpdate(req.params.tourId, req.body, { // Changed to tourId
       new: true,
       runValidators: true
     });
@@ -85,7 +86,7 @@ export const updateTour = async (req, res) => {
 
 export const deleteTour = async (req, res) => {
   try {
-    await Tour.findByIdAndDelete(req.params.id);
+    await Tour.findByIdAndDelete(req.params.tourId);
     res.status(204).json({
       status: 'success',
       data: null

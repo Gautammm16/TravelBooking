@@ -66,3 +66,73 @@ export const verifyPayment = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// Get All Payments
+export const getAllPayments = async (req, res) => {
+  try {
+    const payments = await Payment.find().sort({ createdAt: -1 });
+    res.status(200).json({ success: true, data: payments });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Get Payments by User
+export const getPaymentsByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const payments = await Payment.find({ user: userId }).sort({ createdAt: -1 });
+
+    if (!payments || payments.length === 0) {
+      return res.status(404).json({ success: false, message: 'No payments found for this user' });
+    }
+
+    res.status(200).json({ success: true, data: payments });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Get Payment by ID
+
+export const getPaymentById = async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+
+    // Check if the paymentId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(paymentId)) {
+      return res.status(400).json({ success: false, message: 'Invalid payment ID' });
+    }
+
+    const payment = await Payment.findById(paymentId);
+
+    if (!payment) {
+      return res.status(404).json({ success: false, message: 'Payment not found' });
+    }
+
+    res.status(200).json({ success: true, data: payment });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+
+// Delete Payment (Admin Only)
+export const deletePayment = async (req, res) => {
+  try {
+    const { paymentId } = req.params;
+
+    const payment = await Payment.findByIdAndDelete(paymentId);
+
+    if (!payment) {
+      return res.status(404).json({ success: false, message: 'Payment not found' });
+    }
+
+    res.status(200).json({ success: true, message: 'Payment deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
