@@ -8,6 +8,7 @@ import reviewRoutes from './routes/reviewRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import AppError from './utils/appError.js';
+import globalErrorHandler from './middlewares/globalErrorHandler.js';
 
 dotenv.config();
 connectDB();
@@ -22,7 +23,7 @@ app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 
-
+app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 5000;
 

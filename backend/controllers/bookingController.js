@@ -19,6 +19,8 @@ export const getAllBookings = async (req, res) => {
   }
 };
 
+
+
 // Get single booking
 export const getBooking = async (req, res) => {
   try {
