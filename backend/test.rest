@@ -10,6 +10,17 @@ Content-Type: application/json
   "passwordConfirm": "gautam@##"
 }
 
+###user login
+
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email":"gautam@example.com",
+  "password":"gautam@##"
+}
+
+
 ### LOGIN - Get Token
 POST http://localhost:5000/api/v1/users/login
 Content-Type: application/json
@@ -27,7 +38,7 @@ GET http://localhost:5000/api/v1/users/displayall
 
 
 
-@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTg4OGQ3ZTZjMzdkOTgyNGE0MjNiMiIsImlhdCI6MTc0Njg1NDc4NSwiZXhwIjoxNzQ5NDNzg1fQ.lA6ydWDwNnQk933RVLdcfs7unV_0cufjc6D0PGaKVY4
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWVlOTg5YmJkOGFiM2NiNDQ5ODJlYiIsImlhdCI6MTc0Njg1OTI5OSwiZXhwIjoxNzQ5NDUxMjk5fQ.eLJ2AijrbU583hGPu67we6UaO2H968bgdYw7eSh2l0g
 
 
 
@@ -46,10 +57,6 @@ Authorization: Bearer {{token}}
   "firstname" :"Gautam",
   "lastname":"J"
 }
-
-
-
-
 
 
 ### CRUD OPERATION For  tour with admin 
@@ -106,6 +113,72 @@ Authorization: Bearer {{token}}
 
 
 
-### booking CRUD OPERATION
+###user login
+
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email":"gautam@example.com",
+  "password":"gautam@##"
+}
 
 
+### LOGIN - Get Token
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "admin123"
+}
+
+###Booking
+
+@baseUrl = http://localhost:5000/api/v1
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MWVlOTg5YmJkOGFiM2NiNDQ5ODJlYiIsImlhdCI6MTc0Njg1OTk0OCwiZXhwIjoxNzQ5NDUxOTQ4fQ.23ZsKKCoWR6GDV4JtPg7vGLg4VDSmOGiO_DBSg5G2lQ
+@adminToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTg4OGQ3ZTZjMzdkOTgyNGE0MjNiMiIsImlhdCI6MTc0Njg1OTk2MywiZXhwIjoxNzQ5NDUxOTYzfQ.vaENqCbKg2m3PWi5mvJwsF-iJk2ou5kht6k-fkOx2oc
+@tourId = 681ee5bb2594061097628f0e
+@bookingId = 68188cf404935fae60bcd9fd
+
+### BOOKING CRUD OPERATIONS ###
+
+### Create New Booking (User)
+POST {{baseUrl}}/bookings
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "tour": "{{tourId}}",
+  "participants": 2,
+  "price": 4000,
+  "startDate": "2025-07-15",
+  "paymentMethod": "credit-card",
+  "paymentId": "pay_KR8sT4X1Nc8V2m"
+}
+
+### Get All Bookings (Admin Only)
+GET {{baseUrl}}/bookings
+Authorization: Bearer {{adminToken}}
+
+### Get Single Booking (Admin Only)
+GET {{baseUrl}}/bookings/{{bookingId}}
+Authorization: Bearer {{adminToken}}
+
+### Get Current User's Bookings (Regular User)
+GET {{baseUrl}}/bookings/my-bookings
+Authorization: Bearer {{token}}
+
+### Update Booking (Admin Only)
+PATCH {{baseUrl}}/bookings/{{bookingId}}
+Content-Type: application/json
+Authorization: Bearer {{adminToken}}
+
+{
+  "participants": 3,
+  "status": "confirmed"
+}
+
+### Delete Booking (Admin Only)
+DELETE {{baseUrl}}/bookings/{{bookingId}}
+Authorization: Bearer {{adminToken}}
