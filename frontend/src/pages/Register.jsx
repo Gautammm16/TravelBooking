@@ -1,90 +1,104 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { registerUser } from '../services/userService'
-import { Formik, Form, Field, ErrorMessage } from 'formik'
-import * as Yup from 'yup'
+import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
-  const { login } = useAuth()
-  const [error, setError] = useState('')
-  const navigate = useNavigate()
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
+  const { register, error, loading } = useAuth();
+  const navigate = useNavigate();
 
-  const validationSchema = Yup.object({
-    name: Yup.string().required('Name is required'),
-    email: Yup.string().email('Invalid email').required('Email is required'),
-    password: Yup.string()
-      .min(8, 'Password must be at least 8 characters')
-      .required('Password is required'),
-    passwordConfirm: Yup.string()
-      .oneOf([Yup.ref('password'), null], 'Passwords must match')
-      .required('Confirm your password')
-  })
-
-  const handleSubmit = async (values, { setSubmitting }) => {
-    try {
-      const user = await registerUser(values)
-      login(user)
-      navigate('/dashboard')
-    } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed')
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (password !== passwordConfirm) {
+      return alert('Passwords do not match');
     }
-    setSubmitting(false)
-  }
+    try {
+      await register({ name, email, password, passwordConfirm });
+      navigate('/'); // Redirect to home or dashboard
+    } catch (err) {
+      console.error('Register error:', err);
+    }
+  };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
-      <h2 className="text-2xl font-bold mb-6">Create Account</h2>
-      {error && <div className="text-red-500 mb-4">{error}</div>}
-      
-      <Formik
-        initialValues={{ name: '', email: '', password: '', passwordConfirm: '' }}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ isSubmitting }) => (
-          <Form className="space-y-4">
-            <div>
-              <label className="block mb-1">Name</label>
-              <Field name="name" type="text" className="w-full p-2 border rounded" />
-              <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
-            </div>
-
-            <div>
-              <label className="block mb-1">Email</label>
-              <Field name="email" type="email" className="w-full p-2 border rounded" />
-              <ErrorMessage name="email" component="div" className="text-red-500 text-sm" />
-            </div>
-
-            <div>
-              <label className="block mb-1">Password</label>
-              <Field name="password" type="password" className="w-full p-2 border rounded" />
-              <ErrorMessage name="password" component="div" className="text-red-500 text-sm" />
-            </div>
-
-            <div>
-              <label className="block mb-1">Confirm Password</label>
-              <Field name="passwordConfirm" type="password" className="w-full p-2 border rounded" />
-              <ErrorMessage name="passwordConfirm" component="div" className="text-red-500 text-sm" />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:bg-gray-400"
-            >
-              {isSubmitting ? 'Registering...' : 'Register'}
-            </button>
-          </Form>
-        )}
-      </Formik>
-
-      <p className="mt-4 text-center">
-        Already have an account? {' '}
-        <Link to="/login" className="text-blue-600 hover:underline">Login here</Link>
-      </p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2" htmlFor="firstname">Firstname</label>
+            <input
+              type="text"
+              id="firstname"
+              value={firstname}
+              onChange={(e) => setFirstname(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2" htmlFor="lastname">Lastnamename</label>
+            <input
+              type="text"
+              id="lastname"
+              value={lastname}
+              onChange={(e) => setLastname(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2" htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2" htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div className="mb-6">
+            <label className="block text-gray-700 mb-2" htmlFor="passwordConfirm">Confirm Password</label>
+            <input
+              type="password"
+              id="passwordConfirm"
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {loading ? 'Registering...' : 'Register'}
+          </button>
+        </form>
+        <p className="mt-4 text-center">
+          Already have an account? <a href="/login" className="text-blue-500 hover:underline">Login</a>
+        </p>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;

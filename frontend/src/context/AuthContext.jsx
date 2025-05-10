@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
         
         if (token) {
           api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          const response = await api.get('/users/me');
+          const response = await api.get('/api/v1/users/me');
           setUser(response.data);
         }
       } catch (error) {
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('/v1/users/login', { email, password });
       const { token, user: userData } = response.data;
       
       // Save token and update headers
@@ -60,12 +60,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Register function
-  const register = async (userData) => {
+  const register = async ({ firstname,lastname, email, password, passwordConfirm }) => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await api.post('/auth/register', userData);
+      const response = await api.post('/v1/users/register', { firstname,lastname, email, password, passwordConfirm });
       const { token, user: newUser } = response.data;
       
       // Save token and update headers
@@ -85,7 +85,7 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = async () => {
     try {
-      await api.post('/auth/logout');
+      await api.post('/api/v1/users/logout');
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }) => {
   const forgotPassword = async (email) => {
     try {
       setLoading(true);
-      await api.post('/auth/forgot-password', { email });
+      await api.post('/api/v1/users/forgotPassword', { email });
       return true;
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to send reset link');
@@ -114,7 +114,7 @@ export const AuthProvider = ({ children }) => {
   const resetPassword = async (token, password) => {
     try {
       setLoading(true);
-      await api.post(`/auth/reset-password/${token}`, { password });
+      await api.patch(`/api/v1/users/resetPassword/${token}`, { password, passwordConfirm: password });
       return true;
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to reset password');
@@ -128,7 +128,7 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = async (userData) => {
     try {
       setLoading(true);
-      const response = await api.put('/users/profile', userData);
+      const response = await api.put('/api/v1/users/profile', userData);
       setUser(response.data);
       return response.data;
     } catch (error) {
