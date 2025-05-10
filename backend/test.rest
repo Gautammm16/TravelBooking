@@ -3,26 +3,12 @@ POST http://localhost:5000/api/v1/users/register
 Content-Type: application/json
 
 {
-  "firstName": "gautam",
-  "lastName": "J",
+  "firstName": "Gautam",
+  "lastName": "Jaisur",
   "email": "gautam@example.com",
-  "password": "gtmgtmgtm",
-  "passwordConfirm": "gtmgtmgtm"
+  "password": "gautam@##",
+  "passwordConfirm": "gautam@##"
 }
-
-
-
-
-###
-POST http://localhost:5000/api/v1/users/login
-Content-Type: application/json
-
-{
-  "email": "gautam@example.com",
-  "password": "gtmgtmgtm"
-}
-
-
 
 ### LOGIN - Get Token
 POST http://localhost:5000/api/v1/users/login
@@ -32,238 +18,90 @@ Content-Type: application/json
   "email": "admin@example.com",
   "password": "admin123"
 }
+###
+
+### Display all users
+
+
+GET http://localhost:5000/api/v1/users/displayall
+
+
+
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTg4OGQ3ZTZjMzdkOTgyNGE0MjNiMiIsImlhdCI6MTc0Njg1NDc4NSwiZXhwIjoxNzQ5NDQ2Nzg1fQ.lA6ydWDwNnQk933RVLdcfs7unV_0cufjc6D0PGaKVY4
+
+
+
+### delete user by id 
+
+DELETE http://localhost:5000/api/v1/users/681889b865306b79f8438db5
+Authorization: Bearer {{token}}
 
 ###
 
-GET http://localhost:5000/api/v1/users/displayall 
-
-###
-
-# Set token after login
-@token = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTg4OGQ3ZTZjMzdkOTgyNGE0MjNiMiIsImlhdCI6MTc0NjQzOTM1NywiZXhwIjoxNzQ5MDMxMzU3fQ.5eJg5r-62P4v5PjKLR9EP96k33-P0IWkZ_JPFFMhrZU
-
-############################################################
-### BOOKINGS ROUTES
-############################################################
-
-### CREATE Booking
-POST http://localhost:5000/api/v1/bookings
+PATCH  http://localhost:5000/api/v1/users/681ee989bbd8ab3cb44982eb
 Content-Type: application/json
-Authorization: {{token}}
+Authorization: Bearer {{token}}
 
 {
-  "tour": "661f8e3c4f1c2a8a1a9d3a7b",
-  "price": 1500,
-  "startDate": "2025-06-01",
-   "paymentMethod": "credit-card",
-   "price":1500,
-   "participants":1
+  "firstname" :"Gautam",
+  "lastname":"J"
 }
 
-###
 
-### GET My Bookings
-GET http://localhost:5000/api/v1/bookings/my-bookings
-Authorization: {{token}}
 
-###
 
-### ADMIN: GET All Bookings
-GET http://localhost:5000/api/v1/bookings
-Authorization: {{token}}
 
-###
 
-### ADMIN: DELETE Booking
-DELETE http://localhost:5000/api/v1/bookings/681889f365306b79f8438dd4
-Authorization: {{token}}
+### CRUD OPERATION For  tour with admin 
 
-############################################################
-### TOURS ROUTES
-############################################################
 
-### CREATE Tour (Admin)
+
+### Create Tour with Local Image Path
 POST http://localhost:5000/api/v1/tours
 Content-Type: application/json
-Authorization: {{token}}
+Authorization: Bearer {{token}}
 
 {
-  "name": "Paris Explorer",
-  "duration": 7,
-  "price": 1999,
-  "country": "Paris",
-  "summary": "Explore the city of lights",
-  "description": "A week-long adventure in Paris visiting historical sites and cafes."
-}
-
-###
-
-### GET All Tours
-GET http://localhost:5000/api/v1/tours
-
-###
-
-### GET Tour by ID
-GET http://localhost:5000/api/v1/tours/TOUR_ID_HERE
-
-###
-
-### UPDATE Tour by ID (Admin)
-PATCH http://localhost:5000/api/v1/tours/TOUR_ID_HERE
-Content-Type: application/json
-Authorization: {{token}}
-
-{
-  "price": 1799,
-  "duration": 5
-}
-
-###
-
-### DELETE Tour by ID (Admin)
-DELETE http://localhost:5000/api/v1/tours/TOUR_ID_HERE
-Authorization: {{token}}
-
-############################################################
-### REVIEWS ROUTES
-############################################################
-
-### CREATE Review (User)
-POST http://localhost:5000/api/v1/reviews
-Content-Type: application/json
-Authorization: {{token}}
-
-{
-  "review": "Amazing tour with great guide!",
-  "rating": 5,
-  "tour": "TOUR_ID_HERE"
-}
-
-###
-
-### GET All Reviews
-GET http://localhost:5000/api/v1/reviews
-
-###
-
-### GET Reviews for a Tour
-GET http://localhost:5000/api/v1/tours/TOUR_ID_HERE/reviews
-
-###
-
-### DELETE Review by ID (Admin or Owner)
-DELETE http://localhost:5000/api/v1/reviews/REVIEW_ID_HERE
-Authorization: {{token}}
-
-
-###
-
-
-### 1. REGISTER USER
-POST http://localhost:5000/api/v1/users/register
-Content-Type: application/json
-
-{
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john@example.com",
-  "password": "test1234",
-  "passwordConfirm": "test1234"
-}
-
-### 2. LOGIN USER
-POST http://localhost:5000/api/v1/users/login
-Content-Type: application/json
-
-{
-  "email": "john@example.com",
-  "password": "test1234"
-}
-
-### 3. GET ALL TOURS
-GET http://localhost:5000/api/v1/tours
-
-### 4. CREATE TOUR (Admin Only - Replace token)
-POST http://localhost:5000/api/v1/tours
-Content-Type: application/json
-Authorization: Bearer your_admin_token_here
-
-{
-  "name": "Everest Base Camp",
-  "duration": 14,
-  "maxGroupSize": 10,
+  "name": "Mount Abu",
+  "duration": 10,
+  "maxGroupSize": 5,
   "difficulty": "difficult",
   "price": 2000,
   "summary": "Epic Everest adventure",
-  "country": "Nepal"
+  "country": "Rajasthan",
+  "startLocation": {
+    "type": "Point",
+    "coordinates": [86.9250, 27.9881],
+    "address": "Rajasthan Airport",
+    "description": "Starting point"
+  },
+  "imagePath": "uploads/test-image.jpeg"
 }
 
-### 5. GET SINGLE TOUR (Replace :id with actual tour ID)
-GET http://localhost:5000/api/v1/tours/663b32e55f1d8a9e4f7a3b1c
 
-### 6. CREATE REVIEW (Replace token and tour ID)
-POST http://localhost:5000/api/v1/tours/663b32e55f1d8a9e4f7a3b1c/reviews
+### GET ALL TOURS
+
+GET http://localhost:5000/api/v1/tours/
+Authorization: :Bearer {{token}}
+
+
+### 4. Update Tour
+PATCH http://localhost:5000/api/v1/tours/681ee53a2594061097628f06
 Content-Type: application/json
-Authorization: Bearer your_user_token_here
+Authorization: Bearer {{token}}
 
 {
-  "review": "Life-changing experience!",
-  "rating": 5
+  "price": 9000,
+  "difficulty": "medium"
 }
 
-### 7. CREATE BOOKING (Replace token and tour ID)
-POST http://localhost:5000/api/v1/bookings
-Content-Type: application/json
-Authorization: Bearer your_user_token_here
 
-{
-  "tour": "663b32e55f1d8a9e4f7a3b1c",
-  "price": 2000,
-  "participants": 2
-}
 
-### 8. GET USER PROFILE
-GET http://localhost:5000/api/v1/users/me
-Authorization: Bearer your_user_token_here
+### DELETE TOUR BY ID
 
-### 9. UPDATE USER PROFILE
-PATCH http://localhost:5000/api/v1/users/update-me
-Content-Type: application/json
-Authorization: Bearer your_user_token_here
+DELETE  http://localhost:5000/api/v1/tours/681ee53a2594061097628f06
+Authorization: Bearer {{token}}
 
-{
-  "firstName": "Johnny"
-}
 
-### 10. DELETE USER (Replace token)
-DELETE http://localhost:5000/api/v1/users/delete-me
-Authorization: Bearer your_user_token_here
 
-### 11. INVALID LOGIN TEST
-POST http://localhost:5000/api/v1/users/login
-Content-Type: application/json
 
-{
-  "email": "john@example.com",
-  "password": "wrongpassword"
-}
-
-### 12. DUPLICATE REGISTRATION TEST
-POST http://localhost:5000/api/v1/users/register
-Content-Type: application/json
-
-{
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john@example.com",
-  "password": "test1234",
-  "passwordConfirm": "test1234"
-}
-
-### 13. UNAUTHORIZED TOUR CREATE TEST
-POST http://localhost:5000/api/v1/tours
-Content-Type: application/json
-
-{
-  "name": "Unauthorized Tour"
-}
