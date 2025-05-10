@@ -35,58 +35,6 @@ export const getAllTours = async (req, res) => {
   }
 };
 
-
-
-// export const createTour = async (req, res) => {
-//   try {
-//     // Validate image path
-//     if (!req.body.imagePath) {
-//       return res.status(400).json({
-//         status: 'fail',
-//         message: 'Image path is required'
-//       });
-//     }
-
-//     // Read image file
-//     const fullPath = path.resolve(process.cwd(), req.body.imagePath);
-//     if (!fs.existsSync(fullPath)) {
-//       return res.status(400).json({
-//         status: 'fail',
-//         message: 'Image file not found'
-//       });
-//     }
-
-//     // Convert to base64
-//     const imageBuffer = fs.readFileSync(fullPath);
-//     const b64 = imageBuffer.toString('base64');
-//     const dataURI = `data:image/${path.extname(fullPath).slice(1)};base64,${b64}`;
-
-//     // Upload to Cloudinary
-//     const result = await cloudinary.uploader.upload(dataURI, {
-//       folder: 'tours',
-//       resource_type: 'image'
-//     });
-
-//     // Create tour
-//     const newTour = await Tour.create({
-//       ...req.body,
-//       imageCover: result.secure_url
-//     });
-
-//     res.status(201).json({
-//       status: 'success',
-//       data: {
-//         tour: newTour
-//       }
-//     });
-//   } catch (err) {
-//     res.status(400).json({
-//       status: 'fail',
-//       message: err.message
-//     });
-//   }
-// };
-
 export const createTour = async (req, res) => {
   try {
     // Validate image path

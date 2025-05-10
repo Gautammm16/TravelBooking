@@ -27,7 +27,7 @@ GET http://localhost:5000/api/v1/users/displayall
 
 
 
-@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTg4OGQ3ZTZjMzdkOTgyNGE0MjNiMiIsImlhdCI6MTc0Njg1NDc4NSwiZXhwIjoxNzQ5NDQ2Nzg1fQ.lA6ydWDwNnQk933RVLdcfs7unV_0cufjc6D0PGaKVY4
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTg4OGQ3ZTZjMzdkOTgyNGE0MjNiMiIsImlhdCI6MTc0Njg1NDc4NSwiZXhwIjoxNzQ5NDNzg1fQ.lA6ydWDwNnQk933RVLdcfs7unV_0cufjc6D0PGaKVY4
 
 
 
@@ -103,5 +103,9 @@ DELETE  http://localhost:5000/api/v1/tours/681ee53a2594061097628f06
 Authorization: Bearer {{token}}
 
 
+
+
+
+### booking CRUD OPERATION
 
 

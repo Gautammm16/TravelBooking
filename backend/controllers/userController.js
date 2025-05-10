@@ -53,43 +53,6 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
   });
 });
 
-// export const updateUser = catchAsync(async (req, res, next) => {
-//   const updateData = { ...req.body };
-
-//   // Check if a file was uploaded via multer
-//   if (req.file) {
-//     const result = await new Promise((resolve, reject) => {
-//       const stream = cloudinary.uploader.upload_stream(
-//         { folder: 'users' },
-//         (error, result) => {
-//           if (error) reject(error);
-//           else resolve(result);
-//         }
-//       );
-//       stream.end(req.file.buffer);
-//     });
-
-//     updateData.photo = result.secure_url;
-//   }
-
-//   const updatedUser = await User.findByIdAndUpdate(req.params.id, updateData, {
-//     new: true,
-//     runValidators: true
-//   });
-
-//   if (!updatedUser) {
-//     return next(new AppError('No user found with that ID', 404));
-//   }
-
-//   res.status(200).json({
-//     status: 'success',
-//     data: {
-//       user: updatedUser
-//     }
-//   });
-// });
-
-
 export const updateUser = catchAsync(async (req, res, next) => {
   // Disallowed fields
   const disallowedFields = [
