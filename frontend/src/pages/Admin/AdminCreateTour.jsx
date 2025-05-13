@@ -188,9 +188,10 @@ const AdminCreateTour = () => {
   };
 
   return (
-    <>
-    <AdminNavbar/>
-    <div className="p-6">
+  <div className="flex w-full min-h-screen bg-gray-50">
+    {/* Sidebar */}
+    <AdminNavbar />
+    <div className="flex-1 p-8 overflow-y-auto">
       <h2 className="text-2xl font-bold mb-4">Create New Tour</h2>
       <Formik
         initialValues={{
@@ -571,7 +572,7 @@ const AdminCreateTour = () => {
         )}
       </Formik>
     </div>
-    </>
+    </div>
   );
 };
 

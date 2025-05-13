@@ -11,11 +11,16 @@ import AdminManageTours from './pages/Admin/AdminManageTours';
 import AdminManageUsers from './pages/Admin/AdminManageUsers';
 import AdminManageBookings from './pages/Admin/AdminManageBookings';
 import AdminUpdateTour from './pages/Admin/AdminUpdateTour';
+import Header from './components/Header';
 
 function App() {
   return (
+    
     <AuthProvider>
       <Router>
+        {/* Header will be displayed on all pages */}
+        <Header />
+
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Display />} />
@@ -23,16 +28,14 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/tour/:id" element={<ViewDetailedTour />} />
 
-          {/* Protected Admin Routes with Layout */}
+          {/* Protected Admin Routes */}
           <Route path="/admin" element={<AdminRoute />}>
-            
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="create-tour" element={<AdminCreateTour />} />
-              <Route path="manage-tours" element={<AdminManageTours />} />
-              <Route path="manage-users" element={<AdminManageUsers />} />
-              <Route path="manage-bookings" element={<AdminManageBookings />} />
-              <Route path="update-tour/:id" element={<AdminUpdateTour />} />
-            
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="create-tour" element={<AdminCreateTour />} />
+            <Route path="manage-tours" element={<AdminManageTours />} />
+            <Route path="manage-users" element={<AdminManageUsers />} />
+            <Route path="manage-bookings" element={<AdminManageBookings />} />
+            <Route path="update-tour/:id" element={<AdminUpdateTour />} />
           </Route>
 
           {/* 404 */}

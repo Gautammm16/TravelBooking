@@ -170,9 +170,10 @@ const handleSubmit = async (values, { setSubmitting }) => {
   }
 
   return (
-    <>
-      <AdminNavbar />
-      <div className="p-6 max-w-4xl mx-auto">
+   <div className="flex w-full min-h-screen bg-gray-50">
+    {/* Sidebar */}
+    <AdminNavbar />
+    <div className="flex-1 p-8 overflow-y-auto">
         <h2 className="text-2xl font-bold mb-6">Update Tour</h2>
         
         {updateSuccess && (
@@ -645,7 +646,7 @@ const handleSubmit = async (values, { setSubmitting }) => {
           </Formik>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

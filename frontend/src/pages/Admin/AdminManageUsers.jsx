@@ -33,10 +33,13 @@ const AdminManageUsers = () => {
   };
 
   return (
-    <>
+    <div className="flex w-full min-h-screen bg-gray-50">
+      {/* Sidebar */}
       <AdminNavbar />
-      <div className="p-6">
-        <h2 className="text-2xl font-bold mb-4">Manage Users</h2>
+      
+      {/* Main Content */}
+      <div className="flex-1 p-8">
+        <h2 className="text-2xl font-bold mb-6">Manage Users</h2>
 
         {loading ? (
           <div className="flex justify-center mt-8">
@@ -52,27 +55,37 @@ const AdminManageUsers = () => {
         ) : users.length === 0 ? (
           <p className="text-center text-gray-500">No users found.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white shadow rounded">
-              <thead className="bg-gray-100">
+          <div className="bg-white shadow rounded-lg overflow-hidden w-full">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left">Email</th>
-                  <th className="px-6 py-3 text-left">Role</th>
-                  <th className="px-6 py-3 text-left">Actions</th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Role
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white divide-y divide-gray-200">
                 {users.map(user => (
-                  <tr key={user._id} className="border-t">
-                    <td className="px-6 py-4">{user.email}</td>
-                    <td className="px-6 py-4">{user.role}</td>
-                    <td className="px-6 py-4">
+                  <tr key={user._id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{user.email}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{user.role}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
                       {user.role === 'admin' ? (
                         <span className="text-gray-400 cursor-not-allowed">Cannot delete</span>
                       ) : (
                         <button
                           onClick={() => handleDelete(user._id)}
-                          className="text-red-500 hover:text-red-700"
+                          className="text-red-500 hover:text-red-700 transition-colors duration-150"
                         >
                           Delete
                         </button>
@@ -85,7 +98,7 @@ const AdminManageUsers = () => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
