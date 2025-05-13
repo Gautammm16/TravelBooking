@@ -10,58 +10,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ===========================
-// Get Tour Stats
-// ===========================
-
-
-// export const getTourStats = async (req, res) => {
-//   try {
-//     const tourCount = await Tour.countDocuments();
-//     const bookingCount = await Booking.countDocuments();
-
-//     const avgRatingData = await Tour.aggregate([
-//       {
-//         $group: {
-//           _id: null,
-//           avgRating: { $avg: '$ratingsAverage' }
-//         }
-//       }
-//     ]);
-//     const avgRating = avgRatingData[0]?.avgRating || 0;
-
-//     const monthlyStats = await Tour.aggregate([
-//       {
-//         $group: {
-//           _id: { $month: '$createdAt' },
-//           tours: { $sum: 1 }
-//         }
-//       },
-//       { $sort: { _id: 1 } }
-//     ]);
-
-//     const formattedMonthlyStats = monthlyStats.map(item => ({
-//       month: new Date(2000, item._id - 1).toLocaleString('default', { month: 'short' }),
-//       tours: item.tours
-//     }));
-
-//     res.status(200).json({
-//       status: 'success',
-//       data: {
-//         tourCount,
-//         avgRating,
-//         bookingCount,
-//         monthlyStats: formattedMonthlyStats
-//       }
-//     });
-//   } catch (err) {
-//     res.status(500).json({
-//       status: 'fail',
-//       message: err.message
-//     });
-//   }
-// };
-
 
 export const getTourStats = async (req, res) => {
   try {
@@ -180,6 +128,31 @@ export const getTourStats = async (req, res) => {
 // ===========================
 // Get All Tours
 // ===========================
+// export const getAllTours = async (req, res) => {
+//   try {
+//     const features = new APIFeatures(Tour.find(), req.query)
+//       .filter()
+//       .sort()
+//       .limitFields()
+//       .paginate();
+
+//     const tours = await features.query;
+
+//     res.status(200).json({
+//       status: 'success',
+//       results: tours.length,
+//       data: {
+//         tours
+//       }
+//     });
+//   } catch (err) {
+//     res.status(400).json({
+//       status: 'fail',
+//       message: err.message
+//     });
+//   }
+// };
+
 export const getAllTours = async (req, res) => {
   try {
     const features = new APIFeatures(Tour.find(), req.query)
@@ -190,9 +163,13 @@ export const getAllTours = async (req, res) => {
 
     const tours = await features.query;
 
+    // 🧮 Get total tour count (before pagination)
+    const totalTours = await Tour.countDocuments();
+
     res.status(200).json({
       status: 'success',
       results: tours.length,
+      total: totalTours, // ✅ Important for frontend pagination
       data: {
         tours
       }
@@ -204,6 +181,7 @@ export const getAllTours = async (req, res) => {
     });
   }
 };
+
 
 export const createTour = async (req, res) => {
   try {

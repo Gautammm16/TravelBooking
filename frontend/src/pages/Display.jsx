@@ -3,27 +3,25 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Display = () => {
-  const [tours, setTours] = useState([]);
-  const [filteredTours, setFilteredTours] = useState([]);
+  const [allTours, setAllTours] = useState([]); // all tours from backend
+  const [filteredTours, setFilteredTours] = useState([]); // after filters
   const [search, setSearch] = useState('');
   const [country, setCountry] = useState('');
   const [difficulty, setDifficulty] = useState('');
   const [sortOrder, setSortOrder] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalTours, setTotalTours] = useState(0);
   const [loading, setLoading] = useState(false);
-  const toursPerPage = 8;
 
+  const toursPerPage = 8;
   const navigate = useNavigate();
 
-  const fetchTours = async (page) => {
+  // 🟡 Fetch ALL tours once
+  const fetchAllTours = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`http://localhost:5000/api/v1/tours?page=${page}&limit=${toursPerPage}`);
+      const res = await axios.get('http://localhost:5000/api/v1/tours?limit=1000');
       const data = res.data;
-      setTours(data.data.tours);
-      setFilteredTours(data.data.tours);
-      setTotalTours(data.total || data.results || data.data.tours.length);
+      setAllTours(data.data.tours || []);
       setLoading(false);
     } catch (error) {
       console.error('Error fetching tours:', error);
@@ -32,11 +30,12 @@ const Display = () => {
   };
 
   useEffect(() => {
-    fetchTours(currentPage);
-  }, [currentPage]);
+    fetchAllTours();
+  }, []);
 
+  // 🔵 Apply filters and sorting whenever criteria changes
   useEffect(() => {
-    let filtered = tours;
+    let filtered = allTours;
 
     if (search) {
       filtered = filtered.filter(tour =>
@@ -63,9 +62,14 @@ const Display = () => {
     }
 
     setFilteredTours(filtered);
-  }, [search, country, difficulty, sortOrder, tours]);
+    setCurrentPage(1); // Always go back to page 1 after filters
+  }, [search, country, difficulty, sortOrder, allTours]);
 
-  const totalPages = Math.ceil(totalTours / toursPerPage);
+  // 🧮 Calculate pagination
+  const totalPages = Math.ceil(filteredTours.length / toursPerPage);
+  const indexOfLastTour = currentPage * toursPerPage;
+  const indexOfFirstTour = indexOfLastTour - toursPerPage;
+  const currentTours = filteredTours.slice(indexOfFirstTour, indexOfLastTour);
 
   return (
     <div className="bg-gray-100 min-h-screen py-10 px-4 md:px-10">
@@ -86,7 +90,7 @@ const Display = () => {
           className="px-3 py-2 border rounded focus:ring-2 focus:ring-blue-400"
         >
           <option value="">All Countries</option>
-          {[...new Set(tours.map(t => t.country))].map((c, i) => (
+          {[...new Set(allTours.map(t => t.country))].map((c, i) => (
             <option key={i} value={c}>{c}</option>
           ))}
         </select>
@@ -131,8 +135,8 @@ const Display = () => {
         <>
           {/* 🖼 Tour Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
-            {filteredTours.length > 0 ? (
-              filteredTours.map((tour) => (
+            {currentTours.length > 0 ? (
+              currentTours.map((tour) => (
                 <div
                   key={tour._id}
                   onClick={() => navigate(`/tour/${tour._id}`)}
