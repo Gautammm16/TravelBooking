@@ -1,3 +1,5 @@
+
+
 // tourRoutes.js
 import express from 'express';
 import {
@@ -6,32 +8,24 @@ import {
   getTour,
   updateTour,
   deleteTour,
-  uploadTourImage
+  uploadTourImage,
+  getTourStats
 } from '../controllers/tourController.js';
+
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
 import reviewRouter from './reviewRoutes.js';
 import upload, { handleUploadErrors } from '../middleware/uploadMiddleware.js';
 import cloudinary from '../utils/cloudinary.js';
-import { getTourStats } from '../controllers/tourController.js';
 
 const router = express.Router();
 
+// Route to get tour statistics
+router.get('/stats', getTourStats);
 
-  router.get('/stats', getTourStats);
-
-// Nested reviews routes
+// Nested review routes
 router.use('/:tourId/reviews', reviewRouter);
 
-// File upload routes (with proper error handling)
-router.post(
-  '/upload/:tourId',
-  protect,
-  restrictTo('admin'),
-  upload.single('image'),
-  handleUploadErrors, // Error handling middleware
-  uploadTourImage
-);
-
+// Test upload route (for manual image testing)
 router.post(
   '/test-upload',
   protect,
@@ -47,12 +41,10 @@ router.post(
         });
       }
 
-      // Convert buffer to base64
       const b64 = Buffer.from(req.file.buffer).toString('base64');
       const dataURI = `data:${req.file.mimetype};base64,${b64}`;
 
-      // Upload to Cloudinary
-      const result = await cloudinary.uploader.upload(dataURI, {  // <-- Now using imported instance
+      const result = await cloudinary.uploader.upload(dataURI, {
         folder: 'test-uploads',
         resource_type: 'image'
       });
@@ -75,14 +67,16 @@ router.post(
     }
   }
 );
+
+// Main CRUD routes for tours
 router.route('/')
   .get(getAllTours)
   .post(
     protect,
     restrictTo('admin'),
-    upload.single('imageCover'),  // Handle file upload
+    upload.single('imageCover'),   // Upload cover image
     handleUploadErrors,
-    createTour
+    createTour                     // Uses req.file to upload to Cloudinary
   );
 
 router.route('/:tourId')
@@ -90,6 +84,14 @@ router.route('/:tourId')
   .patch(protect, restrictTo('admin'), updateTour)
   .delete(protect, restrictTo('admin'), deleteTour);
 
-
+// Optional route for uploading images separately (if needed)
+router.post(
+  '/upload/:tourId',
+  protect,
+  restrictTo('admin'),
+  upload.single('image'),         // Accepts single image
+  handleUploadErrors,
+  uploadTourImage                 // You can remove this route if unused
+);
 
 export default router;

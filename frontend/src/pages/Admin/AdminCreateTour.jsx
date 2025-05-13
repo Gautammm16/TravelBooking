@@ -126,11 +126,24 @@ const AdminCreateTour = () => {
       formData.append('data', JSON.stringify(tourData));
 
       // Send the request to your backend API
-      const response = await axios.post('/api/v1/tours', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      // const response = await axios.post('/api/v1/tours', formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data'
+      //   }
+      // });
+
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+  alert('You must be logged in to create a tour.');
+  return;
+}
+    const response = await axios.post('/api/v1/tours', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`
+      }
+    });
 
       resetForm();
       setPreviewImage(null);

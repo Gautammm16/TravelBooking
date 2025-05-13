@@ -6,7 +6,8 @@ import {
   getAllUsers,
   updateUser,
   deleteUser,
-  getAdminStats
+  getAdminStats,
+  getMe
 } from '../controllers/userController.js';
 
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
@@ -17,6 +18,8 @@ const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
+
+router.get('/me', protect, getMe);
 
 router.get("/displayall", getAllUsers);
 

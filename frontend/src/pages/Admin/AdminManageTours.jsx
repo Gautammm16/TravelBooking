@@ -14,7 +14,7 @@ const AdminManageTours = () => {
   useEffect(() => {
     const fetchTours = async () => {
       try {
-        const { data } = await api.get('/api/v1/tours');
+        const { data } = await api.get('/v1/tours');
         setTours(data.data.tours);
         setLoading(false);
       } catch (err) {
@@ -28,7 +28,7 @@ const AdminManageTours = () => {
   const handleDelete = async (tourId) => {
     if (window.confirm('Are you sure you want to delete this tour?')) {
       try {
-        await api.delete(`/api/v1/tours/${tourId}`);
+        await api.delete(`/v1/tours/${tourId}`);
         setTours(tours.filter(tour => tour._id !== tourId));
       } catch (err) {
         alert('Error deleting tour: ' + err.message);

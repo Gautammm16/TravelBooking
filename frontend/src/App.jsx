@@ -21,7 +21,7 @@ function App() {
           <Route path="/" element={<Display />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/view/:id" element={<ViewDetailedTour />} />
+          <Route path="/tour/:id" element={<ViewDetailedTour />} />
 
           {/* Protected Admin Routes with Layout */}
           <Route path="/admin" element={<AdminRoute />}>

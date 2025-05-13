@@ -10,7 +10,7 @@ const AdminManageUsers = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const { data } = await api.get('/api/v1/users');
+        const { data } = await api.get('/v1/users/displayall');
         setUsers(data.data.users);
       } catch (err) {
         console.error('Failed to fetch users:', err);
@@ -35,7 +35,7 @@ const AdminManageUsers = () => {
   const handleDelete = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await api.delete(`/api/v1/users/${userId}`);
+        await api.delete(`/v1/users/${userId}`);
         setUsers(users.filter(user => user._id !== userId));
       } catch (err) {
         console.error('Failed to delete user:', err);
@@ -77,14 +77,8 @@ const AdminManageUsers = () => {
                 <tr key={user._id} className="border-t">
                   <td className="px-6 py-4">{user.email}</td>
                   <td className="px-6 py-4">
-                    <select
-                      className="border rounded px-2 py-1"
-                      value={user.role}
-                      onChange={(e) => handleRoleChange(user._id, e.target.value)}
-                    >
-                      <option value="user">User</option>
-                      <option value="admin">Admin</option>
-                    </select>
+                    <td> {user.role}</td>
+                    
                   </td>
                   <td className="px-6 py-4">
                     <button

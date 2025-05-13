@@ -205,42 +205,33 @@ export const getAllTours = async (req, res) => {
   }
 };
 
-// ===========================
-// Create New Tour
-// ===========================
 export const createTour = async (req, res) => {
   try {
-    if (!req.body.imagePath) {
+    if (!req.file) {
       return res.status(400).json({
         status: 'fail',
-        message: 'Image path is required'
+        message: 'Image file is required'
       });
     }
 
-    const backendDir = path.join(__dirname, '..');
-    const fullPath = path.join(backendDir, req.body.imagePath);
-
-    if (!fs.existsSync(fullPath)) {
-      return res.status(400).json({
-        status: 'fail',
-        message: `Image not found at: ${req.body.imagePath}`
-      });
-    }
-
-    const imageBuffer = fs.readFileSync(fullPath);
-    const b64 = imageBuffer.toString('base64');
-    const ext = path.extname(fullPath).slice(1);
-    const dataURI = `data:image/${ext};base64,${b64}`;
+    // Convert image to base64 for Cloudinary upload
+    const b64 = req.file.buffer.toString('base64');
+    const mimeType = req.file.mimetype.split('/')[1];
+    const dataURI = `data:image/${mimeType};base64,${b64}`;
 
     const result = await cloudinary.uploader.upload(dataURI, {
       folder: 'tours',
       resource_type: 'image'
     });
 
-    const newTour = await Tour.create({
-      ...req.body,
-      imageCover: result.secure_url
-    });
+    // 🔥 Parse the stringified JSON from the frontend
+    const parsedData = JSON.parse(req.body.data);
+
+    // Add the uploaded image URL
+    parsedData.imageCover = result.secure_url;
+
+    // Create the tour with parsed data
+    const newTour = await Tour.create(parsedData);
 
     res.status(201).json({
       status: 'success',
@@ -256,6 +247,8 @@ export const createTour = async (req, res) => {
     });
   }
 };
+
+
 
 // ===========================
 // Get Single Tour
