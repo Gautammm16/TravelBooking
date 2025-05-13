@@ -9,16 +9,20 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
-  "proxy":"http://localhost:5000",
+  "proxy": "http://localhost:5000",
   "dependencies": {
-    "@heroicons/react": "^2.2.0",
+    "@heroicons/react": "^1.0.6",
+    "@mui/icons-material": "^7.1.0",
+    "@mui/material": "^7.1.0",
     "axios": "^1.9.0",
+    "cloudinary": "^2.6.1",
     "cloudinary-react": "^1.8.1",
     "formik": "^2.4.6",
     "react": "^19.1.0",
     "react-csv": "^2.2.2",
     "react-datepicker": "^8.3.0",
     "react-dom": "^19.1.0",
+    "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^7.6.0",
     "react-spinners": "^0.17.0",
     "recharts": "^2.15.3",
@@ -43,5 +47,4 @@
   "keywords": [],
   "author": "",
   "license": "ISC"
-  
 }

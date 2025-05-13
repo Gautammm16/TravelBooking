@@ -10,9 +10,15 @@ const signToken = id => {
   });
 };
 
+
 export const register = catchAsync(async (req, res, next) => {
+  if (req.body.email === 'admin@example.com') {
+    return next(new AppError('Admin registration is not allowed', 403));
+  }
+  
   const newUser = await User.create(req.body);
   const token = signToken(newUser._id);
+  
   res.status(201).json({
     status: 'success',
     token,
@@ -22,6 +28,8 @@ export const register = catchAsync(async (req, res, next) => {
   });
 });
 
+
+
 export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -29,6 +37,36 @@ export const login = catchAsync(async (req, res, next) => {
     return next(new AppError('Please provide email and password!', 400));
   }
 
+  // Check for admin login attempt
+  if (email === 'admin@example.com') {
+    const adminUser = await User.findOne({ email }).select('+password');
+    
+    // Verify admin exists and has correct role
+    if (!adminUser || adminUser.role !== 'admin') {
+      return next(new AppError('Admin access denied', 403));
+    }
+
+    // Verify admin password strictly
+    if (!(await adminUser.correctPassword(password, adminUser.password))) {
+      return next(new AppError('Invalid admin credentials', 401));
+    }
+
+    // Additional check for hardcoded admin password
+    if (password !== 'admin123') {
+      return next(new AppError('Invalid admin credentials', 401));
+    }
+
+    const token = signToken(adminUser._id);
+    return res.status(200).json({
+      status: 'success',
+      token,
+      data: {
+        user: adminUser
+      }
+    });
+  }
+
+  // Regular user login
   const user = await User.findOne({ email }).select('+password');
 
   if (!user || !(await user.correctPassword(password, user.password))) {
@@ -38,7 +76,10 @@ export const login = catchAsync(async (req, res, next) => {
   const token = signToken(user._id);
   res.status(200).json({
     status: 'success',
-    token
+    token,
+    data: {
+      user
+    }
   });
 });
 

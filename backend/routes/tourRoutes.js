@@ -12,8 +12,12 @@ import { protect, restrictTo } from '../middleware/authMiddleware.js';
 import reviewRouter from './reviewRoutes.js';
 import upload, { handleUploadErrors } from '../middleware/uploadMiddleware.js';
 import cloudinary from '../utils/cloudinary.js';
+import { getTourStats } from '../controllers/tourController.js';
 
 const router = express.Router();
+
+
+  router.get('/stats', getTourStats);
 
 // Nested reviews routes
 router.use('/:tourId/reviews', reviewRouter);
@@ -85,5 +89,7 @@ router.route('/:tourId')
   .get(getTour)
   .patch(protect, restrictTo('admin'), updateTour)
   .delete(protect, restrictTo('admin'), deleteTour);
+
+
 
 export default router;

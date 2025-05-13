@@ -3,8 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
-  const [firstname, setFirstname] = useState('');
-  const [lastname, setLastname] = useState('');
+  const [firstName, setFirstname] = useState('');
+  const [lastName, setLastname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirm, setPasswordConfirm] = useState('');
@@ -17,8 +17,8 @@ const Register = () => {
       return alert('Passwords do not match');
     }
     try {
-      await register({ name, email, password, passwordConfirm });
-      navigate('/'); // Redirect to home or dashboard
+      await register({ firstName,lastName, email, password, passwordConfirm });
+      navigate('/login'); // Redirect to home or dashboard
     } catch (err) {
       console.error('Register error:', err);
     }
@@ -34,8 +34,8 @@ const Register = () => {
             <label className="block text-gray-700 mb-2" htmlFor="firstname">Firstname</label>
             <input
               type="text"
-              id="firstname"
-              value={firstname}
+              id="firstName"
+              value={firstName}
               onChange={(e) => setFirstname(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -45,8 +45,8 @@ const Register = () => {
             <label className="block text-gray-700 mb-2" htmlFor="lastname">Lastnamename</label>
             <input
               type="text"
-              id="lastname"
-              value={lastname}
+              id="lastName"
+              value={lastName}
               onChange={(e) => setLastname(e.target.value)}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required

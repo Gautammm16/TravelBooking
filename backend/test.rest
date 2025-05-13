@@ -55,7 +55,7 @@ Authorization: Bearer {{token}}
 
 {
   "firstname" :"Gautam",
-  "lastname":"J"
+  "lastname":"Jaisur"
 }
 
 
@@ -182,3 +182,20 @@ Authorization: Bearer {{adminToken}}
 ### Delete Booking (Admin Only)
 DELETE {{baseUrl}}/bookings/{{bookingId}}
 Authorization: Bearer {{adminToken}}
+
+
+###
+
+
+POST http://localhost:5000/api/v1/users/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "admin123"
+}
+###
+
+@token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4MTg4OGQ3ZTZjMzdkOTgyNGE0MjNiMiIsImlhdCI6MTc0NzExOTk2MSwiZXhwIjoxNzQ5NzExOTYxfQ.7l_Qxwedl2oPRBqixRxL3PKEdmKZcLC4uwM5EjchSOA"
+
+GET http://localhost:5000/api/v1/tours/stats

@@ -36,6 +36,7 @@ app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 
+
 // Global error handler
 app.use(globalErrorHandler);
 

@@ -176,4 +176,11 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
   return false;
 };
 
+userSchema.pre('save', function(next) {
+  if (this.isModified('role') && this.email === 'admin@example.com') {
+    return next(new Error('Admin role cannot be modified'));
+  }
+  next();
+});
+
 export default mongoose.model('User',userSchema)
