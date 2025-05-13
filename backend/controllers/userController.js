@@ -2,7 +2,11 @@ import User from '../models/User.js';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import jwt from 'jsonwebtoken';
-import cloudinary from '../utils/cloudinary.js'; // make sure this file is configured correctly
+import cloudinary from '../utils/cloudinary.js';
+import { OAuth2Client } from 'google-auth-library';
+
+// Initialize Google OAuth2 client
+const client = new OAuth2Client(process.env.REACT_APP_GOOGLE_CLIENT_ID);
 
 const signToken = id => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -10,6 +14,64 @@ const signToken = id => {
   });
 };
 
+export const googleLogin = catchAsync(async (req, res, next) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return next(new AppError('Google token is required', 400));
+  }
+
+  try {
+    // Verify the Google token
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    const { email, name, picture, sub: googleId } = payload;
+
+    // Check if user exists
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      // Create new user if doesn't exist
+      user = await User.create({
+        name,
+        email,
+        avatar: picture,
+        googleId,
+        isVerified: true, // Google-verified emails are automatically verified
+        password: undefined, // No password for Google-authenticated users
+        passwordConfirm: undefined
+      });
+    } else if (!user.googleId) {
+      // Update existing user with Google ID if logging in with Google for first time
+      user.googleId = googleId;
+      if (!user.avatar) user.avatar = picture;
+      if (!user.isVerified) user.isVerified = true;
+      await user.save({ validateBeforeSave: false });
+    }
+
+    // Check if the user is trying to use Google login for admin account
+    if (email === 'admin@example.com') {
+      return next(new AppError('Admin must login with email/password', 403));
+    }
+
+    const authToken = signToken(user._id);
+
+    res.status(200).json({
+      status: 'success',
+      token: authToken,
+      data: {
+        user
+      }
+    });
+  } catch (error) {
+    console.error('Google authentication error:', error);
+    return next(new AppError('Google authentication failed', 401));
+  }
+});
 
 export const register = catchAsync(async (req, res, next) => {
   if (req.body.email === 'admin@example.com') {
@@ -27,8 +89,6 @@ export const register = catchAsync(async (req, res, next) => {
     }
   });
 });
-
-
 
 export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;

@@ -7,9 +7,10 @@ import {
   updateUser,
   deleteUser,
   getAdminStats,
-  getMe
+  getMe,
+  googleLogin
 } from '../controllers/userController.js';
-
+// import { googleLogin } from '../controllers/userController.js';
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
 
 import upload from '../middleware/uploadMiddleware.js'; // <-- multer middleware
@@ -18,7 +19,7 @@ const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
-
+router.post('/google-login', googleLogin);
 router.get('/me', protect, getMe);
 
 router.get("/displayall", getAllUsers);

@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
           data.role = 'admin';
         }
 
-         setUser(data.data.user)
+        setUser(data.data.user);
       } catch (error) {
         console.error('Auth initialization error:', error);
         handleCleanup();
@@ -61,12 +61,37 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('token', data.token);
       api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
       
-      // Use backend-provided user data directly
       const userData = data.data.user;
       setUser(userData);
       return userData;
     } catch (error) {
       const message = error.response?.data?.message || 'Login failed';
+      setError(message);
+      throw new Error(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add this new method for Google login
+  const googleLogin = async (googleData) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Send Google credential to your backend
+      const { data } = await api.post(`${API_BASE}/google-login`, {
+        token: googleData.credential || googleData.tokenId
+      });
+      
+      localStorage.setItem('token', data.token);
+      api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+      
+      const userData = data.data.user;
+      setUser(userData);
+      return userData;
+    } catch (error) {
+      const message = error.response?.data?.message || 'Google login failed';
       setError(message);
       throw new Error(message);
     } finally {
@@ -104,7 +129,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ Forgot Password
   const forgotPassword = async (email) => {
     try {
       setLoading(true);
@@ -121,7 +145,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ Reset Password
   const resetPassword = async (token, newPassword, confirmPassword) => {
     try {
       setLoading(true);
@@ -146,7 +169,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ✅ Update Profile
   const updateProfile = async (updatedFields) => {
     try {
       setLoading(true);
@@ -172,6 +194,7 @@ export const AuthProvider = ({ children }) => {
     error,
     isAdmin: checkAdminAccess(),
     login,
+    googleLogin, // Add the new googleLogin method to the context value
     register,
     logout,
     forgotPassword,
