@@ -1,0 +1,665 @@
+[  
+  {
+    "name": "Rajasthan Palaces Tour",
+    "slug": "rajasthan-palaces-tour",
+    "duration": 14,
+    "maxGroupSize": 8,
+    "difficulty": "difficult",
+    "ratingsAverage": 4.4,
+    "ratingsQuantity": 373,
+    "price": 21932,
+    "priceDiscount": 20777,
+    "summary": "Experience the beauty of Jaipur on this 14-day difficult tour.",
+    "description": "The tour includes The Pink City known for its palaces. It also covers The romantic city of lakes and palaces.",
+    "imageCover": "https://www.flamingotravels.co.in/blog/wp-content/uploads/2020/06/feture_image3.jpg",
+    "images": [
+      "https://www.flamingotravels.co.in/blog/wp-content/uploads/2020/06/Amer-Fort.jpg",
+      "https://www.flamingotravels.co.in/blog/wp-content/uploads/2020/06/Mehrangarh-Fort.jpg",
+      "https://www.flamingotravels.co.in/blog/wp-content/uploads/2020/06/Chittorgarh-Fort.jpg"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        75.7873,
+        26.9124
+      ],
+      "description": "The Pink City known for its palaces"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          75.7873,
+          26.9124
+        ],
+        "description": "The Pink City known for its palaces",
+        "day": 1
+      },
+      {
+        "type": "Point",
+        "coordinates": [
+          73.7125,
+          24.5854
+        ],
+        "description": "The romantic city of lakes and palaces",
+        "day": 2
+      }
+    ],
+    "startDates": [
+      "2025-08-24",
+      "2025-12-13",
+      "2026-10-09"
+    ],
+    "country": "India"
+  },
+  {
+    "name": "Himalayan Excursion Tour",
+    "slug": "himalayan-excursion-tour",
+    "duration": 11,
+    "maxGroupSize": 5,
+    "difficulty": "medium",
+    "ratingsAverage": 4.1,
+    "ratingsQuantity": 136,
+    "price": 7490,
+    "priceDiscount": 6042,
+    "summary": "Experience the beauty of Darjeeling on this 11-day medium tour.",
+    "description": "The tour includes Tea gardens and Himalayan views. It also covers Snow-capped peaks and monasteries.",
+    "imageCover": "https://i.pinimg.com/736x/d5/1b/75/d51b758696a2031263c7ebe21abb2fdc.jpg",
+    "images": [
+      "https://i.pinimg.com/736x/d2/c4/c3/d2c4c378a9d7e8d7fcc8985d9f54c8cf.jpg",
+      "https://i.pinimg.com/736x/1a/38/e3/1a38e361da899aa0776a5ceea3af17f1.jpg",
+      "https://i.pinimg.com/736x/7f/83/21/7f8321c735511d0a5a250cdd2529e6a8.jpg"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        88.2627,
+        27.036
+      ],
+      "description": "Tea gardens and Himalayan views"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          88.2627,
+          27.036
+        ],
+        "description": "Tea gardens and Himalayan views",
+        "day": 1
+      },
+      {
+        "type": "Point",
+        "coordinates": [
+          88.6065,
+          27.3389
+        ],
+        "description": "Snow-capped peaks and monasteries",
+        "day": 2
+      }
+    ],
+    "startDates": [
+      "2025-06-14",
+      "2026-02-05",
+      "2026-11-06"
+    ],
+    "country": "India"
+  },
+  {
+    "name": "Goa Beaches and Spice Tour",
+    "slug": "goa-beaches-and-spice-tour",
+    "duration": 14,
+    "maxGroupSize": 14,
+    "difficulty": "difficult",
+    "ratingsAverage": 4.3,
+    "ratingsQuantity": 258,
+    "price": 9244,
+    "priceDiscount": 8495,
+    "summary": "Experience the beauty of Goa Beaches on this 14-day difficult tour.",
+    "description": "The tour includes Sunny beaches and vibrant nightlife. It also covers Spices farm and Portuguese heritage.",
+    "imageCover": "https://lp-cms-production.imgix.net/2024-07/shutterstockRF248021569.jpg?auto=format,compress&q=72&w=1440&h=810&fit=crop",
+    "images": [
+      "https://lp-cms-production.imgix.net/2024-07/LPI-27561-13.jpg?auto=format,compress&q=72&fit=crop&w=1200",
+      "https://lp-cms-production.imgix.net/2024-07/GettyRF469852152.jpg?auto=format,compress&q=72&fit=crop&w=1200",
+      "https://s7ap1.scene7.com/is/image/incredibleindia/calangute-beach-goa-7-musthead-hero?qlt=82&ts=1726735078814"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        73.754,
+        15.554
+      ],
+      "description": "Sunny beaches and vibrant nightlife"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          73.754,
+          15.554
+        ],
+        "description": "Sunny beaches and vibrant nightlife",
+        "day": 1
+      },
+      {
+        "type": "Point",
+        "coordinates": [
+          74.0721,
+          15.4697
+        ],
+        "description": "Spices farm and Portuguese heritage",
+        "day": 2
+      }
+    ],
+    "startDates": [
+      "2025-07-05",
+      "2025-08-27",
+      "2026-10-24"
+    ],
+    "country": "India"
+  },
+  {
+    "name": "Wildlife Rajasthan Tour",
+    "slug": "wildlife-rajasthan-tour",
+    "duration": 8,
+    "maxGroupSize": 18,
+    "difficulty": "easy",
+    "ratingsAverage": 4.2,
+    "ratingsQuantity": 142,
+    "price": 28207,
+    "priceDiscount": 25178,
+    "summary": "Experience the beauty of Ranthambore National Park on this 8-day easy tour.",
+    "description": "The tour includes Tropical dry deciduous forest and tigers. It also covers The Pink City known for its palaces.",
+    "imageCover": "https://i.pinimg.com/736x/b9/a9/f5/b9a9f5037677a0ae51d6ffe9a7150945.jpg",
+    "images": [
+      "https://i.pinimg.com/736x/10/20/c5/1020c5822afbe84a47141255e9204acd.jpg",
+      "https://i.pinimg.com/736x/9a/e7/e1/9ae7e14bc932239dbebb83de85dc989b.jpg",
+      "https://i.pinimg.com/736x/09/ea/6c/09ea6cd795435770d90aadc7dbcd58c7.jpg"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        76.5026,
+        26.0173
+      ],
+      "description": "Tropical dry deciduous forest and tigers"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          76.5026,
+          26.0173
+        ],
+        "description": "Tropical dry deciduous forest and tigers",
+        "day": 1
+      },
+      {
+        "type": "Point",
+        "coordinates": [
+          75.7873,
+          26.9124
+        ],
+        "description": "The Pink City known for its palaces",
+        "day": 2
+      }
+    ],
+    "startDates": [
+      "2025-11-14",
+      "2026-01-12",
+      "2026-04-03"
+    ],
+    "country": "India"
+  },
+  {
+    "name": "Holistic India Tour",
+    "slug": "holistic-india-tour",
+    "duration": 7,
+    "maxGroupSize": 20,
+    "difficulty": "easy",
+    "ratingsAverage": 4.6,
+    "ratingsQuantity": 193,
+    "price": 16449,
+    "priceDiscount": 12814,
+    "summary": "Experience the beauty of Taj Mahal, Agra on this 7-day easy tour.",
+    "description": "The tour includes The iconic white marble mausoleum. It also covers City on the banks of the Ganges.",
+    "imageCover": "https://i.pinimg.com/736x/07/1d/3b/071d3b4a5ebb658209e103bcb56a4fae.jpg",
+    "images": [
+      "https://i.pinimg.com/736x/75/07/2e/75072e0c33886071b2451cd7cf0a21fd.jpg",
+      "https://i.pinimg.com/736x/11/a2/c3/11a2c3d7a387f65aef559bd722553db5.jpg",
+      "https://i.pinimg.com/736x/58/99/c4/5899c4db843faa15724f0b698b037848.jpg"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        78.0421,
+        27.1751
+      ],
+      "description": "The iconic white marble mausoleum"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          78.0421,
+          27.1751
+        ],
+        "description": "The iconic white marble mausoleum",
+        "day": 1
+      },
+      {
+        "type": "Point",
+        "coordinates": [
+          82.9739,
+          25.3176
+        ],
+        "description": "Holy city on the banks of the Ganges",
+        "day": 2
+      }
+    ],
+    "startDates": [
+      "2025-10-19",
+      "2026-01-11",
+      "2026-07-13"
+    ],
+    "country": "India"
+  },
+  {
+    "name": "Tropical Beach Tour",
+    "slug": "tropical-beach-tour",
+    "duration": 5,
+    "maxGroupSize": 21,
+    "difficulty": "easy",
+    "ratingsAverage": 4.5,
+    "ratingsQuantity": 154,
+    "price": 22415,
+    "priceDiscount": 16069,
+    "summary": "Experience the beauty of Andaman Islands on this 5-day easy tour.",
+    "description": "The tour includes Tropical islands with marine life. It also covers Sunny beaches and vibrant nightlife.",
+    "imageCover": "https://i.pinimg.com/736x/5c/f2/7b/5cf27b93f2c28910481ef045a93fc0d6.jpg",
+    "images": [
+      "https://i.pinimg.com/736x/10/41/d5/1041d540e8d07a9a56d604b91c7e836d.jpg",
+      "https://i.pinimg.com/736x/d3/db/f6/d3dbf6cf8104cc0ca9c53b3b66f0ef77.jpg",
+      "https://i.pinimg.com/736x/81/95/56/819556f38acc911ac1c86c7c34e6730c.jpg"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        92.998,
+        11.9404
+      ],
+      "description": "Tropical islands with marine life"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          92.998,
+          11.9404
+        ],
+        "description": "Tropical islands with marine life",
+        "day": 1
+      },
+      {
+        "type": "Point",
+        "coordinates": [
+          73.754,
+          15.554
+        ],
+        "description": "Sunny beaches and vibrant nightlife",
+        "day": 2
+      }
+    ],
+    "startDates": [
+      "2025-10-14",
+      "2026-02-09",
+      "2026-06-04"
+    ],
+    "country": "India"
+  },
+  {
+    "name": "Mumbai to Goa Tour",
+    "slug": "mumbai-to-goa-tour",
+    "duration": 11,
+    "maxGroupSize": 21,
+    "difficulty": "easy",
+    "ratingsAverage": 4.9,
+    "ratingsQuantity": 410,
+    "price": 7766,
+    "priceDiscount": 6651,
+    "summary": "Experience the beauty of Mumbai on this 11-day easy tour.",
+    "description": "The tour includes Bustling financial and entertainment capital. It also covers Sunny beaches and vibrant nightlife.",
+    "imageCover": "https://i.pinimg.com/736x/08/f2/12/08f212a369e575b58d4582d47d80f5e1.jpg",
+    "images": [
+      "https://i.pinimg.com/736x/02/c6/ff/02c6fff00d27c46faa13dad2fd9120cc.jpg",
+      "https://i.pinimg.com/736x/27/73/7a/27737aeb2d1dad101c1e717dedbe0715.jpg",
+      "https://i.pinimg.com/736x/d3/37/b8/d337b80d49867492eebf6cccc73fc6ef.jpg"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        72.8777,
+        19.076
+      ],
+      "description": "Bustling financial and entertainment capital"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          72.8777,
+          19.076
+        ],
+        "description": "Bustling financial and entertainment capital",
+        "day": 1
+      },
+      {
+        "type": "Point",
+        "coordinates": [
+          73.754,
+          15.554
+        ],
+        "description": "Sunny beaches and vibrant nightlife",
+        "day": 2
+      }
+    ],
+    "startDates": [
+      "2025-06-08",
+      "2026-01-09",
+      "2026-08-18"
+    ],
+    "country": "India"
+  },
+  {
+    "name": "Punjab and Capital Tour",
+    "slug": "punjab-and-capital-tour",
+    "duration": 10,
+    "maxGroupSize": 15,
+    "difficulty": "medium",
+    "ratingsAverage": 4.6,
+    "ratingsQuantity": 489,
+    "price": 15386,
+    "priceDiscount": 12270,
+    "summary": "Experience the beauty of New Delhi on this 10-day medium tour.",
+    "description": "The tour includes The capital city with historic monuments. It also covers The spiritual Golden Temple site.",
+    "imageCover": "https://i.pinimg.com/736x/fc/b6/f4/fcb6f4145d94d055956be7c3c7ef351a.jpg",
+    "images": [
+      "https://i.pinimg.com/736x/6a/87/34/6a8734c81cd0fa8621714fe9eb1e745c.jpg",
+      "https://i.pinimg.com/736x/39/97/11/3997115dcbfad7f647dc475deb88c22a.jpg",
+      "https://i.pinimg.com/736x/73/b4/d8/73b4d89ff923544f25be3ee8a98928b3.jpg"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        77.209,
+        28.6139
+      ],
+      "description": "The capital city with historic monuments"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          77.209,
+          28.6139
+        ],
+        "description": "The capital city with historic monuments",
+        "day": 1
+      },
+      {
+        "type": "Point",
+        "coordinates": [
+          74.8723,
+          31.634
+        ],
+        "description": "The spiritual Golden Temple site",
+        "day": 2
+      }
+    ],
+    "startDates": [
+      "2026-04-12",
+      "2026-05-17",
+      "2026-06-06"
+    ],
+    "country": "India"
+  },
+  {
+    "name": "Banglore Tour",
+    "slug": "banglore-tour",
+    "duration": 6,
+    "maxGroupSize": 24,
+    "difficulty": "easy",
+    "ratingsAverage": 4.2,
+    "ratingsQuantity": 342,
+    "price": 6249,
+    "priceDiscount": 4999,
+    "summary": "Experience the beauty of Bangalore on this 6-day easy tour.",
+    "description": "The tour includes Garden city and tech hub. It also covers City of palaces and silk.",
+    "imageCover": "https://i.pinimg.com/736x/67/91/70/679170e29c303ce2326ae5e613074825.jpg",
+    "images": [
+      "https://i.pinimg.com/736x/69/92/ec/6992ec3b0acd25a6fb660ef49bcefc4b.jpg",
+      "https://i.pinimg.com/736x/7f/a1/65/7fa1650e53f107a8cdd7aedcff061be2.jpg",
+      "https://i.pinimg.com/736x/73/03/2a/73032a2e6e3d1535d9cf76c62acacd9f.jpg"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        77.5946,
+        12.9716
+      ],
+      "description": "Garden city and tech hub"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          77.5946,
+          12.9716
+        ],
+        "description": "Garden city and tech hub",
+        "day": 1
+      },
+      {
+        "type": "Point",
+        "coordinates": [
+          76.6394,
+          12.2958
+        ],
+        "description": "City of palaces and silk",
+        "day": 2
+      }
+    ],
+    "startDates": [
+      "2025-06-23",
+      "2026-01-17",
+      "2026-10-28"
+    ],
+    "country": "India"
+  },
+  {
+    "name": "Tech Cities Tour",
+    "slug": "tech-cities-tour",
+    "duration": 9,
+    "maxGroupSize": 10,
+    "difficulty": "medium",
+    "ratingsAverage": 3.6,
+    "ratingsQuantity": 410,
+    "price": 7291,
+    "priceDiscount": 5393,
+    "summary": "Experience the beauty of Hyderabad on this 9-day medium tour.",
+    "description": "The tour includes City of pearls and tech industry. It also covers Garden city and tech hub.",
+    "imageCover": "https://i.pinimg.com/736x/07/05/87/070587fc9f9a1377dd72bb68358e282c.jpg",
+    "images": [
+      "https://i.pinimg.com/736x/2c/d8/6e/2cd86ed2657bd73c4755a103c97c9f07.jpg",
+      "https://i.pinimg.com/736x/1f/8f/8e/1f8f8e7bb8e52ce4ed68c74bfd0dd3d4.jpg",
+      "https://i.pinimg.com/736x/ce/cc/18/cecc1829842cfb7576cf21546ccd5b51.jpg"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        78.4867,
+        17.385
+      ],
+      "description": "City of pearls and tech industry"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          78.4867,
+          17.385
+        ],
+        "description": "City of pearls and tech industry",
+        "day": 1
+      },
+      {
+        "type": "Point",
+        "coordinates": [
+          77.5946,
+          12.9716
+        ],
+        "description": "Garden city and tech hub",
+        "day": 2
+      }
+    ],
+    "startDates": [
+      "2025-11-23",
+      "2026-06-22",
+      "2026-08-23"
+    ],
+    "country": "India"
+  },
+  {
+    "name": "Paris City Lights Tour",
+    "slug": "paris-city-lights-tour",
+    "duration": 8,
+    "maxGroupSize": 18,
+    "difficulty": "medium",
+    "ratingsAverage": 3.5,
+    "ratingsQuantity": 318,
+    "price": 32885,
+    "priceDiscount": 27246,
+    "summary": "Explore Paris, France on this 8-day medium tour.",
+    "description": "This tour highlights City of Love with iconic Eiffel Tower and local attractions.",
+    "imageCover": "https://i.pinimg.com/736x/37/16/a9/3716a9cd97a8d689f977a0a4661dcd88.jpg",
+    "images": [
+      "https://i.pinimg.com/736x/5e/62/03/5e6203626dbee9a8c171327855d86362.jpg",
+      "https://i.pinimg.com/736x/8a/e9/99/8ae999537dfdc473c8af9a9c2a2b6859.jpg",
+      "https://i.pinimg.com/736x/e6/1e/4f/e61e4fc45405c0ad7b8c0081ab3d6d7a.jpg"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        2.3522,
+        48.8566
+      ],
+      "description": "City of Love with iconic Eiffel Tower"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          2.3522,
+          48.8566
+        ],
+        "description": "City of Love with iconic Eiffel Tower",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-10-14",
+      "2026-02-04",
+      "2026-04-20"
+    ],
+    "country": "France"
+  },
+  {
+    "name": "Romantic Paris Tour",
+    "slug": "romantic-paris-tour",
+    "duration": 14,
+    "maxGroupSize": 8,
+    "difficulty": "difficult",
+    "ratingsAverage": 4.5,
+    "ratingsQuantity": 470,
+    "price": 4181,
+    "priceDiscount": 3351,
+    "summary": "Explore Paris, France on this 14-day difficult tour.",
+    "description": "This tour highlights City of Love with iconic Eiffel Tower and local attractions.",
+    "imageCover": "https://i.pinimg.com/736x/f8/9f/99/f89f99c0f88f59a16c53c8903ff00750.jpg",
+    "images": [
+      "https://i.pinimg.com/736x/56/8a/8c/568a8c27d79dde09c540f9149e481f86.jpg",
+      "https://i.pinimg.com/736x/ab/06/7c/ab067c4a9f21209ed1c45f7d13fd9833.jpg",
+      "https://i.pinimg.com/736x/06/4c/d1/064cd1d934f91222d37625111e27e7e6.jpg"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        2.3522,
+        48.8566
+      ],
+      "description": "City of Love with iconic Eiffel Tower"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          2.3522,
+          48.8566
+        ],
+        "description": "City of Love with iconic Eiffel Tower",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-09-23",
+      "2026-01-13",
+      "2026-05-01"
+    ],
+    "country": "France"
+  },
+  {
+    "name": "Historical London Tour",
+    "slug": "historical-london-tour",
+    "duration": 11,
+    "maxGroupSize": 7,
+    "difficulty": "medium",
+    "ratingsAverage": 4.0,
+    "ratingsQuantity": 283,
+    "price": 32780,
+    "priceDiscount": 26714,
+    "summary": "Explore London, UK on this 11-day medium tour.",
+    "description": "This tour highlights Historic city with royal palaces and local attractions.",
+    "imageCover": "https://i.pinimg.com/736x/ca/be/e9/cabee961f77a37b5cce223213a83246f.jpg",
+    "images": [
+      "https://i.pinimg.com/736x/ba/2d/0b/ba2d0ba9080d10fad5dfcb098731617b.jpg",
+      "https://i.pinimg.com/736x/da/d2/65/dad26591b114f447953584361c2ca24e.jpg",
+      "https://i.pinimg.com/736x/47/5e/cd/475ecd27fd20a84ce5f3b26c9a92ad20.jpg"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        -0.1278,
+        51.5074
+      ],
+      "description": "Historic city with royal palaces"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          -0.1278,
+          51.5074
+        ],
+        "description": "Historic city with royal palaces",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-07-25",
+      "2026-02-08",
+      "2026-10-13"
+    ],
+    "country": "United Kingdom"
+  }
+]
+

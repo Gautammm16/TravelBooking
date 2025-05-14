@@ -1,0 +1,794 @@
+[
+  {
+    "name": "Barcelona City Tour",
+    "slug": "barcelona-city-tour",
+    "duration": 2,
+    "maxGroupSize": 7,
+    "difficulty": "easy",
+    "ratingsAverage": 4.9,
+    "ratingsQuantity": 264,
+    "price": 42641,
+    "priceDiscount": 37894,
+    "summary": "Explore Barcelona, Spain on this 2-day easy tour.",
+    "description": "This tour highlights Vibrant city with Gaudi's architecture and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Barcelona,Spain",
+    "images": [
+      "https://source.unsplash.com/800x600/?Barcelona,Spain",
+      "https://source.unsplash.com/800x600/?Barcelona,Spain,travel",
+      "https://source.unsplash.com/800x600/?Barcelona,Spain,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        2.1734,
+        41.3851
+      ],
+      "description": "Vibrant city with Gaudi's architecture"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          2.1734,
+          41.3851
+        ],
+        "description": "Vibrant city with Gaudi's architecture",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-05-31",
+      "2026-03-05",
+      "2026-12-02"
+    ],
+    "country": "Spain"
+  },
+  {
+    "name": "Dubai Desert Adventure",
+    "slug": "dubai-desert-adventure",
+    "duration": 13,
+    "maxGroupSize": 22,
+    "difficulty": "easy",
+    "ratingsAverage": 4.6,
+    "ratingsQuantity": 345,
+    "price": 4409,
+    "priceDiscount": 3878,
+    "summary": "Explore Dubai, UAE on this 13-day easy tour.",
+    "description": "This tour highlights Luxury skyscrapers in the desert and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Dubai,UAE",
+    "images": [
+      "https://source.unsplash.com/800x600/?Dubai,UAE",
+      "https://source.unsplash.com/800x600/?Dubai,UAE,travel",
+      "https://source.unsplash.com/800x600/?Dubai,UAE,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        55.2708,
+        25.2048
+      ],
+      "description": "Luxury skyscrapers in the desert"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          55.2708,
+          25.2048
+        ],
+        "description": "Luxury skyscrapers in the desert",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-09-16",
+      "2026-03-31",
+      "2026-06-26"
+    ],
+    "country": "UAE"
+  },
+  {
+    "name": "Rio Carnival Tour",
+    "slug": "rio-carnival-tour",
+    "duration": 2,
+    "maxGroupSize": 9,
+    "difficulty": "easy",
+    "ratingsAverage": 4.7,
+    "ratingsQuantity": 202,
+    "price": 10416,
+    "priceDiscount": 9074,
+    "summary": "Explore Rio de Janeiro, Brazil on this 2-day easy tour.",
+    "description": "This tour highlights Famous beaches and Carnival spirit and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Rio%20de%20Janeiro,Brazil",
+    "images": [
+      "https://source.unsplash.com/800x600/?Rio%20de%20Janeiro,Brazil",
+      "https://source.unsplash.com/800x600/?Rio%20de%20Janeiro,Brazil,travel",
+      "https://source.unsplash.com/800x600/?Rio%20de%20Janeiro,Brazil,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        -43.1729,
+        -22.9068
+      ],
+      "description": "Famous beaches and Carnival spirit"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          -43.1729,
+          -22.9068
+        ],
+        "description": "Famous beaches and Carnival spirit",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-06-22",
+      "2025-10-13",
+      "2025-12-29"
+    ],
+    "country": "Brazil"
+  },
+  {
+    "name": "Rio Beach Tour",
+    "slug": "rio-beach-tour",
+    "duration": 5,
+    "maxGroupSize": 22,
+    "difficulty": "easy",
+    "ratingsAverage": 4.3,
+    "ratingsQuantity": 384,
+    "price": 3132,
+    "priceDiscount": 2713,
+    "summary": "Explore Rio de Janeiro, Brazil on this 5-day easy tour.",
+    "description": "This tour highlights Famous beaches and Carnival spirit and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Rio%20de%20Janeiro,Brazil",
+    "images": [
+      "https://source.unsplash.com/800x600/?Rio%20de%20Janeiro,Brazil",
+      "https://source.unsplash.com/800x600/?Rio%20de%20Janeiro,Brazil,travel",
+      "https://source.unsplash.com/800x600/?Rio%20de%20Janeiro,Brazil,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        -43.1729,
+        -22.9068
+      ],
+      "description": "Famous beaches and Carnival spirit"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          -43.1729,
+          -22.9068
+        ],
+        "description": "Famous beaches and Carnival spirit",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-09-14",
+      "2026-04-21",
+      "2026-10-09"
+    ],
+    "country": "Brazil"
+  },
+  {
+    "name": "Machu Picchu Trek",
+    "slug": "machu-picchu-trek",
+    "duration": 2,
+    "maxGroupSize": 5,
+    "difficulty": "medium",
+    "ratingsAverage": 4.0,
+    "ratingsQuantity": 45,
+    "price": 23128,
+    "priceDiscount": 17306,
+    "summary": "Explore Machu Picchu, Peru on this 2-day medium tour.",
+    "description": "This tour highlights Historic Inca citadel in mountains and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Machu%20Picchu,Peru",
+    "images": [
+      "https://source.unsplash.com/800x600/?Machu%20Picchu,Peru",
+      "https://source.unsplash.com/800x600/?Machu%20Picchu,Peru,travel",
+      "https://source.unsplash.com/800x600/?Machu%20Picchu,Peru,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        -72.545,
+        -13.1631
+      ],
+      "description": "Historic Inca citadel in mountains"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          -72.545,
+          -13.1631
+        ],
+        "description": "Historic Inca citadel in mountains",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-06-16",
+      "2025-11-12",
+      "2026-07-27"
+    ],
+    "country": "Peru"
+  },
+  {
+    "name": "Cape of Good Hope Tour",
+    "slug": "cape-of-good-hope-tour",
+    "duration": 11,
+    "maxGroupSize": 18,
+    "difficulty": "easy",
+    "ratingsAverage": 4.9,
+    "ratingsQuantity": 37,
+    "price": 15405,
+    "priceDiscount": 11602,
+    "summary": "Explore Cape Town, South Africa on this 11-day easy tour.",
+    "description": "This tour highlights Coastal city with Table Mountain and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Cape%20Town,South%20Africa",
+    "images": [
+      "https://source.unsplash.com/800x600/?Cape%20Town,South%20Africa",
+      "https://source.unsplash.com/800x600/?Cape%20Town,South%20Africa,travel",
+      "https://source.unsplash.com/800x600/?Cape%20Town,South%20Africa,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        18.4241,
+        -33.9249
+      ],
+      "description": "Coastal city with Table Mountain"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          18.4241,
+          -33.9249
+        ],
+        "description": "Coastal city with Table Mountain",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-05-30",
+      "2026-03-06",
+      "2026-12-06"
+    ],
+    "country": "South Africa"
+  },
+  {
+    "name": "Tokyo Nightlife Tour",
+    "slug": "tokyo-nightlife-tour",
+    "duration": 3,
+    "maxGroupSize": 25,
+    "difficulty": "medium",
+    "ratingsAverage": 4.9,
+    "ratingsQuantity": 71,
+    "price": 24274,
+    "priceDiscount": 18235,
+    "summary": "Explore Tokyo Nightlife on this 3-day medium tour.",
+    "description": "This tour highlights Modern metropolis with traditional temples and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Tokyo%20Nightlife",
+    "images": [
+      "https://source.unsplash.com/800x600/?Tokyo%20Nightlife",
+      "https://source.unsplash.com/800x600/?Tokyo%20Nightlife,travel",
+      "https://source.unsplash.com/800x600/?Tokyo%20Nightlife,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        139.6917,
+        35.6895
+      ],
+      "description": "Modern metropolis with traditional temples"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          139.6917,
+          35.6895
+        ],
+        "description": "Modern metropolis with traditional temples",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-10-08",
+      "2025-12-03",
+      "2026-06-28"
+    ],
+    "country": "Japan"
+  },
+  {
+    "name": "Tokyo City Tour",
+    "slug": "tokyo-city-tour",
+    "duration": 4,
+    "maxGroupSize": 5,
+    "difficulty": "easy",
+    "ratingsAverage": 4.2,
+    "ratingsQuantity": 294,
+    "price": 18018,
+    "priceDiscount": 14010,
+    "summary": "Explore Tokyo, Japan on this 4-day easy tour.",
+    "description": "This tour highlights Modern metropolis with traditional temples and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Tokyo",
+    "images": [
+      "https://source.unsplash.com/800x600/?Tokyo",
+      "https://source.unsplash.com/800x600/?Tokyo,travel",
+      "https://source.unsplash.com/800x600/?Tokyo,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        139.6917,
+        35.6895
+      ],
+      "description": "Modern metropolis with traditional temples"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          139.6917,
+          35.6895
+        ],
+        "description": "Modern metropolis with traditional temples",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-05-30",
+      "2025-11-11",
+      "2026-08-24"
+    ],
+    "country": "Japan"
+  },
+  {
+    "name": "Istanbul Heritage Tour",
+    "slug": "istanbul-heritage-tour",
+    "duration": 13,
+    "maxGroupSize": 24,
+    "difficulty": "medium",
+    "ratingsAverage": 4.6,
+    "ratingsQuantity": 167,
+    "price": 5174,
+    "priceDiscount": 4448,
+    "summary": "Explore Istanbul, Turkey on this 13-day medium tour.",
+    "description": "This tour highlights City where Europe meets Asia and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Istanbul,Turkey",
+    "images": [
+      "https://source.unsplash.com/800x600/?Istanbul,Turkey",
+      "https://source.unsplash.com/800x600/?Istanbul,Turkey,travel",
+      "https://source.unsplash.com/800x600/?Istanbul,Turkey,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        28.9784,
+        41.0082
+      ],
+      "description": "City where Europe meets Asia"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          28.9784,
+          41.0082
+        ],
+        "description": "City where Europe meets Asia",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2026-03-22",
+      "2026-08-15",
+      "2026-09-18"
+    ],
+    "country": "Turkey"
+  },
+  {
+    "name": "Amsterdam Canals Tour",
+    "slug": "amsterdam-canals-tour",
+    "duration": 13,
+    "maxGroupSize": 24,
+    "difficulty": "easy",
+    "ratingsAverage": 4.0,
+    "ratingsQuantity": 461,
+    "price": 4818,
+    "priceDiscount": 4177,
+    "summary": "Explore Amsterdam, Netherlands on this 13-day easy tour.",
+    "description": "This tour highlights City of canals and bicycles and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Amsterdam,Netherlands",
+    "images": [
+      "https://source.unsplash.com/800x600/?Amsterdam,Netherlands",
+      "https://source.unsplash.com/800x600/?Amsterdam,Netherlands,travel",
+      "https://source.unsplash.com/800x600/?Amsterdam,Netherlands,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        4.9041,
+        52.3676
+      ],
+      "description": "City of canals and bicycles"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          4.9041,
+          52.3676
+        ],
+        "description": "City of canals and bicycles",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-05-25",
+      "2026-01-16",
+      "2026-08-25"
+    ],
+    "country": "Netherlands"
+  },
+  {
+    "name": "Berlin Wall Tour",
+    "slug": "berlin-wall-tour",
+    "duration": 14,
+    "maxGroupSize": 19,
+    "difficulty": "difficult",
+    "ratingsAverage": 3.7,
+    "ratingsQuantity": 181,
+    "price": 14681,
+    "priceDiscount": 13717,
+    "summary": "Explore Berlin, Germany on this 14-day difficult tour.",
+    "description": "This tour highlights Historic sites and modern culture and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Berlin,Germany",
+    "images": [
+      "https://source.unsplash.com/800x600/?Berlin,Germany",
+      "https://source.unsplash.com/800x600/?Berlin,Germany,travel",
+      "https://source.unsplash.com/800x600/?Berlin,Germany,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        13.405,
+        52.52
+      ],
+      "description": "Historic sites and modern culture"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          13.405,
+          52.52
+        ],
+        "description": "Historic sites and modern culture",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-06-08",
+      "2026-01-19",
+      "2026-08-31"
+    ],
+    "country": "Germany"
+  },
+  {
+    "name": "Mexico City Cultural Tour",
+    "slug": "mexico-city-cultural-tour",
+    "duration": 3,
+    "maxGroupSize": 13,
+    "difficulty": "easy",
+    "ratingsAverage": 4.6,
+    "ratingsQuantity": 342,
+    "price": 10028,
+    "priceDiscount": 7524,
+    "summary": "Explore Mexico City, Mexico on this 3-day easy tour.",
+    "description": "This tour highlights High-altitude metropolis with culture and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Mexico%20City,Mexico",
+    "images": [
+      "https://source.unsplash.com/800x600/?Mexico%20City,Mexico",
+      "https://source.unsplash.com/800x600/?Mexico%20City,Mexico,travel",
+      "https://source.unsplash.com/800x600/?Mexico%20City,Mexico,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        -99.1332,
+        19.4326
+      ],
+      "description": "High-altitude metropolis with culture"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          -99.1332,
+          19.4326
+        ],
+        "description": "High-altitude metropolis with culture",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-10-25",
+      "2026-01-05",
+      "2026-06-07"
+    ],
+    "country": "Mexico"
+  },
+  {
+    "name": "Petra Archaeological Tour",
+    "slug": "petra-archaeological-tour",
+    "duration": 7,
+    "maxGroupSize": 14,
+    "difficulty": "medium",
+    "ratingsAverage": 3.6,
+    "ratingsQuantity": 51,
+    "price": 23422,
+    "priceDiscount": 18357,
+    "summary": "Explore Petra, Jordan on this 7-day medium tour.",
+    "description": "This tour highlights Ancient city carved into sandstone and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Petra,Jordan",
+    "images": [
+      "https://source.unsplash.com/800x600/?Petra,Jordan",
+      "https://source.unsplash.com/800x600/?Petra,Jordan,travel",
+      "https://source.unsplash.com/800x600/?Petra,Jordan,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        35.4444,
+        30.3285
+      ],
+      "description": "Ancient city carved into sandstone"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          35.4444,
+          30.3285
+        ],
+        "description": "Ancient city carved into sandstone",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-09-04",
+      "2025-12-16",
+      "2026-01-06"
+    ],
+    "country": "Jordan"
+  },
+  {
+    "name": "Bangkok Street Food Tour",
+    "slug": "bangkok-street-food-tour",
+    "duration": 11,
+    "maxGroupSize": 24,
+    "difficulty": "easy",
+    "ratingsAverage": 4.8,
+    "ratingsQuantity": 269,
+    "price": 4371,
+    "priceDiscount": 3750,
+    "summary": "Explore Bangkok, Thailand on this 11-day easy tour.",
+    "description": "This tour highlights Bustling city with grand palaces and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Bangkok,Thailand",
+    "images": [
+      "https://source.unsplash.com/800x600/?Bangkok,Thailand",
+      "https://source.unsplash.com/800x600/?Bangkok,Thailand,travel",
+      "https://source.unsplash.com/800x600/?Bangkok,Thailand,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        100.5018,
+        13.7563
+      ],
+      "description": "Bustling city with grand palaces"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          100.5018,
+          13.7563
+        ],
+        "description": "Bustling city with grand palaces",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-06-09",
+      "2026-03-01",
+      "2026-07-01"
+    ],
+    "country": "Thailand"
+  },
+  {
+    "name": "Sahara Desert Safari",
+    "slug": "sahara-desert-safari",
+    "duration": 14,
+    "maxGroupSize": 20,
+    "difficulty": "difficult",
+    "ratingsAverage": 3.6,
+    "ratingsQuantity": 276,
+    "price": 4857,
+    "priceDiscount": 3557,
+    "summary": "Explore Sahara Desert, Morocco on this 14-day difficult tour.",
+    "description": "This tour highlights Endless dunes and nights under stars and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Sahara%20Desert,Morocco",
+    "images": [
+      "https://source.unsplash.com/800x600/?Sahara%20Desert,Morocco",
+      "https://source.unsplash.com/800x600/?Sahara%20Desert,Morocco,travel",
+      "https://source.unsplash.com/800x600/?Sahara%20Desert,Morocco,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        -8.0,
+        31.0
+      ],
+      "description": "Endless dunes and nights under stars"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          -8.0,
+          31.0
+        ],
+        "description": "Endless dunes and nights under stars",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-06-06",
+      "2026-05-17",
+      "2026-08-01"
+    ],
+    "country": "Morocco"
+  },
+  {
+    "name": "New York City Tour",
+    "slug": "new-york-city-tour",
+    "duration": 14,
+    "maxGroupSize": 19,
+    "difficulty": "difficult",
+    "ratingsAverage": 4.1,
+    "ratingsQuantity": 427,
+    "price": 29698,
+    "priceDiscount": 25525,
+    "summary": "Explore New York, USA on this 14-day difficult tour.",
+    "description": "This tour highlights The city that never sleeps and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?New%20York",
+    "images": [
+      "https://source.unsplash.com/800x600/?New%20York",
+      "https://source.unsplash.com/800x600/?New%20York,travel",
+      "https://source.unsplash.com/800x600/?New%20York,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        -74.006,
+        40.7128
+      ],
+      "description": "The city that never sleeps"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          -74.006,
+          40.7128
+        ],
+        "description": "The city that never sleeps",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2026-05-09",
+      "2026-08-12",
+      "2026-11-08"
+    ],
+    "country": "United States"
+  },
+  {
+    "name": "Sydney Harbor Tour",
+    "slug": "sydney-harbor-tour",
+    "duration": 2,
+    "maxGroupSize": 18,
+    "difficulty": "easy",
+    "ratingsAverage": 4.1,
+    "ratingsQuantity": 396,
+    "price": 6011,
+    "priceDiscount": 4451,
+    "summary": "Explore Sydney, Australia on this 2-day easy tour.",
+    "description": "This tour highlights Harbor city with Opera House and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Sydney",
+    "images": [
+      "https://source.unsplash.com/800x600/?Sydney",
+      "https://source.unsplash.com/800x600/?Sydney,travel",
+      "https://source.unsplash.com/800x600/?Sydney,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        151.2093,
+        -33.8688
+      ],
+      "description": "Harbor city with Opera House"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          151.2093,
+          -33.8688
+        ],
+        "description": "Harbor city with Opera House",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-08-20",
+      "2026-04-28",
+      "2026-06-09"
+    ],
+    "country": "Australia"
+  },
+  {
+    "name": "Cairo Pyramids Tour",
+    "slug": "cairo-pyramids-tour",
+    "duration": 9,
+    "maxGroupSize": 10,
+    "difficulty": "medium",
+    "ratingsAverage": 3.9,
+    "ratingsQuantity": 226,
+    "price": 41012,
+    "priceDiscount": 35084,
+    "summary": "Explore Cairo, Egypt on this 9-day medium tour.",
+    "description": "This tour highlights Ancient pyramids and Nile river and local attractions.",
+    "imageCover": "https://source.unsplash.com/800x600/?Cairo",
+    "images": [
+      "https://source.unsplash.com/800x600/?Cairo",
+      "https://source.unsplash.com/800x600/?Cairo,travel",
+      "https://source.unsplash.com/800x600/?Cairo,landscape"
+    ],
+    "startLocation": {
+      "type": "Point",
+      "coordinates": [
+        31.2357,
+        30.0444
+      ],
+      "description": "Ancient pyramids and Nile river"
+    },
+    "locations": [
+      {
+        "type": "Point",
+        "coordinates": [
+          31.2357,
+          30.0444
+        ],
+        "description": "Ancient pyramids and Nile river",
+        "day": 1
+      }
+    ],
+    "startDates": [
+      "2025-08-21",
+      "2025-09-29",
+      "2026-07-24"
+    ],
+    "country": "Egypt"
+  }
+]

@@ -1,3 +1,4 @@
+// AuthContext.jsx
 import { createContext, useState, useContext, useEffect } from 'react';
 import api from '../services/api';
 
@@ -12,7 +13,6 @@ export const AuthProvider = ({ children }) => {
 
   const API_BASE = '/v1/users';
 
-  // Admin login validator
   const validateAdminCredentials = (email, password) => {
     return email === 'admin@example.com' && password === 'admin123';
   };
@@ -55,12 +55,12 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const { data } = await api.post(`${API_BASE}/login`, { email, password });
-      
+
       localStorage.setItem('token', data.token);
       api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-      
+
       const userData = data.data.user;
       setUser(userData);
       return userData;
@@ -73,42 +73,169 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Add this new method for Google login
-  const googleLogin = async (googleData) => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // Send Google credential to your backend
-      const { data } = await api.post(`${API_BASE}/google-login`, {
-        token: googleData.credential || googleData.tokenId
-      });
-      
-      localStorage.setItem('token', data.token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-      
-      const userData = data.data.user;
-      setUser(userData);
-      return userData;
-    } catch (error) {
-      const message = error.response?.data?.message || 'Google login failed';
-      setError(message);
-      throw new Error(message);
-    } finally {
-      setLoading(false);
+
+//   const googleLogin = async (googleData) => {
+//   try {
+//     setLoading(true);
+//     setError(null);
+
+//     // Extract token from different possible Google response formats
+//     const token = googleData?.credential || googleData?.tokenId || googleData?.access_token;
+//     if (!token) {
+//       console.error('Google response data:', googleData); // Debug unexpected response
+//       throw new Error('No Google token provided in the response');
+//     }
+
+//     console.log('Google token received:', token); // Debug
+    
+//     // Verify token structure (basic check)
+//     if (token.split('.').length !== 3) {
+//       throw new Error('Invalid Google token format');
+//     }
+
+//     // Make API request with better error handling
+//     const response = await api.post(`${API_BASE}/google-login`, { token }, {
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       timeout: 10000, // 10 second timeout
+//     }).catch(error => {
+//       // Enhanced error handling for Axios errors
+//       if (error.response) {
+//         // Server responded with a status code outside 2xx
+//         console.error('Server error response:', error.response.data);
+//         throw new Error(error.response.data.message || 'Google authentication failed');
+//       } else if (error.request) {
+//         // Request was made but no response received
+//         console.error('No response received:', error.request);
+//         throw new Error('No response from server. Please try again.');
+//       } else {
+//         // Something happened in setting up the request
+//         console.error('Request setup error:', error.message);
+//         throw new Error('Failed to send Google login request');
+//       }
+//     });
+
+//     const { data } = response;
+
+//     // Validate response structure
+//     if (!data?.token || !data?.data?.user) {
+//       console.error('Invalid response structure:', data);
+//       throw new Error('Invalid server response format');
+//     }
+
+//     // Store token and update auth state
+//     localStorage.setItem('token', data.token);
+//     api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+
+//     const userData = data.data.user;
+//     setUser(userData);
+    
+//     // Debug successful login
+//     console.log('Google login successful:', userData);
+    
+//     return userData;
+//   } catch (error) {
+//     // Handle specific Google API errors
+//     if (error.message.includes('popup_closed_by_user')) {
+//       setError('Login popup was closed before completion');
+//     } else if (error.message.includes('access_denied')) {
+//       setError('You denied the Google login request');
+//     } else {
+//       setError(error.message || 'Google login failed');
+//     }
+    
+//     console.error('Google login error:', error);
+//     throw error; // Re-throw for components to handle
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+const googleLogin = async (googleData) => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    // Extract token from credential response
+    const token = googleData?.credential;
+    if (!token) {
+      throw new Error('No credential received from Google');
     }
-  };
+
+    // Debug - log token header
+    const tokenHeader = JSON.parse(atob(token.split('.')[0]));
+    console.log('Google token header:', tokenHeader);
+
+    // Verify token structure
+    if (token.split('.').length !== 3) {
+      throw new Error('Invalid JWT structure');
+    }
+
+    const response = await api.post(`${API_BASE}/google-login`, 
+      { token },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        withCredentials: true,
+        timeout: 10000
+      }
+    );
+
+    if (!response.data?.token) {
+      throw new Error('Invalid server response - missing token');
+    }
+
+    // Store token and update state
+    localStorage.setItem('token', response.data.token);
+    api.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+    
+    const userData = response.data.data.user;
+    setUser(userData);
+    
+    console.log('Google login successful:', userData);
+    return userData;
+  } catch (error) {
+    let errorMessage = 'Google login failed';
+    
+    if (error.response) {
+      // Server responded with error status
+      console.error('Server error response:', error.response.data);
+      errorMessage = error.response.data?.message || errorMessage;
+      
+      // Check for specific error cases
+      if (error.response.status === 401) {
+        errorMessage = 'Google authentication failed - please try again';
+      }
+    } else if (error.request) {
+      // Request was made but no response
+      console.error('No response received:', error.request);
+      errorMessage = 'No response from server. Please check your connection.';
+    } else {
+      // Request setup error
+      console.error('Request error:', error.message);
+    }
+
+    setError(errorMessage);
+    throw new Error(errorMessage);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const register = async (userData) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const { data } = await api.post(`${API_BASE}/register`, userData);
-      
+
       localStorage.setItem('token', data.token);
       api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-      
+
       const registeredUser = data.data.user;
       setUser(registeredUser);
       return registeredUser;
@@ -194,7 +321,7 @@ export const AuthProvider = ({ children }) => {
     error,
     isAdmin: checkAdminAccess(),
     login,
-    googleLogin, // Add the new googleLogin method to the context value
+    googleLogin,
     register,
     logout,
     forgotPassword,

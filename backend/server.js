@@ -18,11 +18,22 @@ connectDB();
 const app = express();
 
 // Middleware
+
+
+// app.use(cors({
+//   origin: 'http://localhost:5173', // frontend origin
+//   credentials: true  
+// }
+// ));
+
 app.use(cors({
-  origin: 'http://localhost:5173', // frontend origin
-  credentials: true  
-}
-));
+  origin: ['http://localhost:5173'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Authorization']
+}));
+
 app.use(morgan('dev'));
 
 // Accept JSON and form-data
