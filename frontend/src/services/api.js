@@ -138,7 +138,7 @@ export const logout = async () => {
 };
 
 export const forgotPassword = async (email) => {
-  const response = await API.post('/api/v1/users/forgotPassword', { email });
+  const response = await API.post('/v1/users/forgotPassword', { email });
   return response.data;
 };
 

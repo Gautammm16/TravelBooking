@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { forgotPassword, resetPassword } from '../services/api'
 
-export default function ForgotPassword() {
+export default function Forgetpassword() {
   const [email, setEmail] = useState('')
   const [resetToken, setResetToken] = useState('')
   const [newPassword, setNewPassword] = useState('')

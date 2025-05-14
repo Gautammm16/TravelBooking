@@ -12,6 +12,9 @@ import AdminManageUsers from './pages/Admin/AdminManageUsers';
 import AdminManageBookings from './pages/Admin/AdminManageBookings';
 import AdminUpdateTour from './pages/Admin/AdminUpdateTour';
 import Header from './components/Header';
+import Footer from './components/Footer';
+import Forgetpassword from './components/Forgetpassword';
+import Gallery from './pages/Gallery';
 
 function App() {
   return (
@@ -27,7 +30,8 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/tour/:id" element={<ViewDetailedTour />} />
-
+          <Route path = "/forget-password" element = {<Forgetpassword/>} />
+          <Route path="/gallery" element={<Gallery/>} />
           {/* Protected Admin Routes */}
           <Route path="/admin" element={<AdminRoute />}>
             <Route path="dashboard" element={<AdminDashboard />} />
@@ -41,6 +45,7 @@ function App() {
           {/* 404 */}
           <Route path="*" element={<h1>404 - Page Not Found</h1>} />
         </Routes>
+        <Footer/>
       </Router>
     </AuthProvider>
   );
