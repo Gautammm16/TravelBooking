@@ -188,12 +188,12 @@ const AdminCreateTour = () => {
   };
 
   return (
-  <div className="flex w-full min-h-screen bg-gray-50">
+  <div className="flex w-full min-h-screen bg-gray-50  ">
     {/* Sidebar */}
     <AdminNavbar />
-    <div className="flex-1 p-8 overflow-y-auto">
+    <div className="flex-1 p-8 overflow-y-auto ">
       <h2 className="text-2xl font-bold mb-4">Create New Tour</h2>
-      <Formik
+      <Formik 
         initialValues={{
           name: '',
           slug: '',
@@ -220,7 +220,7 @@ const AdminCreateTour = () => {
         onSubmit={handleSubmit}
       >
         {({ setFieldValue, isSubmitting, values }) => (
-          <Form className="space-y-4">
+          <Form className="space-y-4 ">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Basic Information */}
               <div className="space-y-4 md:col-span-2">

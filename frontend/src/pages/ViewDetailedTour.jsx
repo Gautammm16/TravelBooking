@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Dialog } from '@headlessui/react';
+import { useAuth } from '../context/AuthContext';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -67,6 +68,14 @@ const ViewDetailedTour = () => {
   };
 
   const handleBookNow = async () => {
+
+    const { user } = useAuth();
+    if (!user) {
+      alert('You must be logged in to book a tour.');
+      navigate('/login');
+      return;
+    }
+
     if (!selectedDate) {
       setError('Please select a date');
       return;
@@ -93,6 +102,18 @@ const ViewDetailedTour = () => {
       setIsLoading(false);
     }
   };
+
+//  const handleBookNow = () => {
+//     const { user } = useAuth();
+//     if (!user) {
+//       alert('You must be logged in to book a tour.');
+//       navigate('/login');
+//       return;
+//     }
+
+//     // Redirect to booking page or open booking modal
+//     navigate(`/book/${tour._id}`);
+//   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -377,7 +398,8 @@ const ViewDetailedTour = () => {
               <p>{tour.dis}</p>
               <span className="text-2xl font-bold text-green-600">${tour.price}</span>
               <button 
-                onClick={() => setIsBookingModalOpen(true)}
+                //  onClick={() => setIsBookingModalOpen(true)}
+                onClick={handleBookNow}
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center"
               >
                 Book Now <ArrowRight size={18} className="ml-2" />
