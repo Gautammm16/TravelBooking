@@ -46,10 +46,10 @@ const Header = () => {
         <div className={`w-full md:flex md:items-center md:justify-between md:w-auto ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
           <ul className="flex flex-col md:flex-row md:space-x-6 mt-4 md:mt-0">
             <li><Link to="/" className="block px-2 py-1 hover:text-gray-200">Home</Link></li>
-            <li><Link to="/about" className="block px-2 py-1 hover:text-gray-200">About</Link></li>
-            <li><Link to="/destination" className="block px-2 py-1 hover:text-gray-200">Destination</Link></li>
-            <li><Link to="/packages" className="block px-2 py-1 hover:text-gray-200">Packages</Link></li>
+            {/* <li><Link to="/destination" className="block px-2 py-1 hover:text-gray-200">Destination</Link></li> */}
+            {/* <li><Link to="/packages" className="block px-2 py-1 hover:text-gray-200">Packages</Link></li> */}
             <li><Link to="/gallery" className="block px-2 py-1 hover:text-gray-200">Gallery</Link></li>
+            <li><Link to="/about" className="block px-2 py-1 hover:text-gray-200">About</Link></li>
             <li><Link to="/contact" className="block px-2 py-1 hover:text-gray-200">Contact Us</Link></li>
 
             {/* Dropdown in Mobile View */}

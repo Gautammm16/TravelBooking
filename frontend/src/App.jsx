@@ -15,6 +15,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Forgetpassword from './components/Forgetpassword';
 import Gallery from './pages/Gallery';
+import About from './pages/About';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/tour/:id" element={<ViewDetailedTour />} />
           <Route path = "/forget-password" element = {<Forgetpassword/>} />
           <Route path="/gallery" element={<Gallery/>} />
+          <Route path="/about" element={<About/>} />
           {/* Protected Admin Routes */}
           <Route path="/admin" element={<AdminRoute />}>
             <Route path="dashboard" element={<AdminDashboard />} />

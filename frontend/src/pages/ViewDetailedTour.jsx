@@ -23,6 +23,7 @@ import {
 const ViewDetailedTour = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [tour, setTour] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -67,53 +68,53 @@ const ViewDetailedTour = () => {
     }
   };
 
-  const handleBookNow = async () => {
-
-    const { user } = useAuth();
+  const handleBookNowClick = () => {
     if (!user) {
       alert('You must be logged in to book a tour.');
-      navigate('/login');
+      navigate('/login', { state: { from: `/tour/${id}` } });
       return;
     }
-
-    if (!selectedDate) {
-      setError('Please select a date');
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      const res = await axios.post('http://localhost:5000/api/v1/bookings', {
-        tour: id,
-        price: tour.price,
-        startDate: selectedDate
-      }, {
-        withCredentials: true
-      });
-
-      if (res.data.status === 'success') {
-        setBookingSuccess(true);
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || 'Booking failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
+    setIsBookingModalOpen(true);
   };
 
-//  const handleBookNow = () => {
-//     const { user } = useAuth();
-//     if (!user) {
-//       alert('You must be logged in to book a tour.');
-//       navigate('/login');
-//       return;
-//     }
+const handleConfirmBooking = async () => {
+  if (!selectedDate) {
+    setError('Please select a date');
+    return;
+  }
 
-//     // Redirect to booking page or open booking modal
-//     navigate(`/book/${tour._id}`);
-//   };
+  setIsLoading(true);
+  setError(null);
+  
+  try {
+    const res = await axios.post(
+      'http://localhost:5000/api/v1/bookings',
+      {
+        tour: id,
+        price: tour.price,
+        startDate: selectedDate,
+        user: user.id // Include user ID in the request body
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${user.token}`
+        }
+      }
+    );
+
+    if (res.data.status === 'success') {
+      setBookingSuccess(true);
+    }
+  } catch (err) {
+    setError(err.response?.data?.message || 'Booking failed. Please try again.');
+    console.error('Booking error:', err);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
+
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -241,7 +242,7 @@ const ViewDetailedTour = () => {
                       <p className="text-2xl font-bold">${tour.price}</p>
                     </div>
                     <button
-                      onClick={handleBookNow}
+                      onClick={handleConfirmBooking}
                       disabled={isLoading}
                       className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center disabled:bg-blue-400"
                     >
@@ -398,8 +399,7 @@ const ViewDetailedTour = () => {
               <p>{tour.dis}</p>
               <span className="text-2xl font-bold text-green-600">${tour.price}</span>
               <button 
-                //  onClick={() => setIsBookingModalOpen(true)}
-                onClick={handleBookNow}
+                onClick={handleBookNowClick}
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition flex items-center"
               >
                 Book Now <ArrowRight size={18} className="ml-2" />

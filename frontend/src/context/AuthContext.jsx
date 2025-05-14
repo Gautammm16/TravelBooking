@@ -51,27 +51,27 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  const login = async (email, password) => {
-    try {
-      setLoading(true);
-      setError(null);
+  // const login = async (email, password) => {
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
 
-      const { data } = await api.post(`${API_BASE}/login`, { email, password });
+  //     const { data } = await api.post(`${API_BASE}/login`, { email, password });
 
-      localStorage.setItem('token', data.token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+  //     localStorage.setItem('token', data.token);
+  //     api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
 
-      const userData = data.data.user;
-      setUser(userData);
-      return userData;
-    } catch (error) {
-      const message = error.response?.data?.message || 'Login failed';
-      setError(message);
-      throw new Error(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     const userData = data.data.user;
+  //     setUser(userData);
+  //     return userData;
+  //   } catch (error) {
+  //     const message = error.response?.data?.message || 'Login failed';
+  //     setError(message);
+  //     throw new Error(message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
 
 //   const googleLogin = async (googleData) => {
@@ -151,6 +151,38 @@ export const AuthProvider = ({ children }) => {
 //     setLoading(false);
 //   }
 // };
+
+
+const login = async (email, password) => {
+  try {
+    setLoading(true);
+    setError(null);
+
+    const { data } = await api.post(`${API_BASE}/login`, { email, password });
+
+    // Store token in localStorage
+    localStorage.setItem('token', data.token);
+    
+    // Set default auth header for axios
+    api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
+
+    // Create user object WITH the token
+    const userData = {
+      ...data.data.user, // all user info from API
+      token: data.token // include the token
+    };
+
+    setUser(userData);
+    return userData;
+  } catch (error) {
+    const message = error.response?.data?.message || 'Login failed';
+    setError(message);
+    throw new Error(message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 const googleLogin = async (googleData) => {
   try {

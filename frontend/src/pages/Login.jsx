@@ -8,6 +8,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [localError, setLocalError] = useState(''); // Added local error state
   const { login, googleLogin, error, loading, user } = useAuth();
+ 
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -30,9 +31,11 @@ const Login = () => {
     try {
       setLocalError(''); // Clear previous errors
       await login(email, password);
+     
     } catch (err) {
       console.error('Login error:', err);
       setLocalError(err.message || 'Login failed');
+     
     }
   };
 

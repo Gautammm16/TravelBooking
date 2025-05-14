@@ -16,7 +16,7 @@ router.use(protect);
 
 // User-specific routes
 router.get('/my-bookings', getUserBookings);
-router.post('/', createBooking);
+router.post('/', protect, createBooking);
 
 // Admin-only routes
 router.use(restrictTo('admin'));

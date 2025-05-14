@@ -26,6 +26,7 @@
     "react-csv": "^2.2.2",
     "react-datepicker": "^8.3.0",
     "react-dom": "^19.1.0",
+    "react-layout-masonry": "^1.2.0",
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^7.6.0",
     "react-spinners": "^0.17.0",

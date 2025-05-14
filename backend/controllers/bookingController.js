@@ -74,17 +74,53 @@ export const getBooking = async (req, res) => {
 };
 
 // Create a booking
+
 export const createBooking = async (req, res) => {
   try {
-    if (!req.body.user) req.body.user = req.user.id;
+    console.log('Headers:', req.headers); // Debug log
     
-    const newBooking = await Booking.create(req.body);
+    // 1) Verify authentication
+    if (!req.headers.authorization) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'No authorization token provided'
+      });
+    }
+
+    const token = req.headers.authorization.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'No token found in authorization header'
+      });
+    }
+
+    // 2) Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log('Decoded token:', decoded); // Debug log
+
+    // 3) Create booking
+    const bookingData = {
+      ...req.body,
+      user: decoded.id // Use ID from token
+    };
+
+    const newBooking = await Booking.create(bookingData);
     
     res.status(201).json({
       status: 'success',
       data: { booking: newBooking }
     });
   } catch (err) {
+    console.error('Booking error:', err);
+    
+    if (err.name === 'JsonWebTokenError') {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Invalid token. Please log in again.'
+      });
+    }
+    
     res.status(400).json({
       status: 'fail',
       message: err.message
