@@ -16,6 +16,7 @@ import Footer from './components/Footer';
 import Forgetpassword from './components/Forgetpassword';
 import Gallery from './pages/Gallery';
 import About from './pages/About';
+import Contact from './pages/Contact';
 
 function App() {
   return (
@@ -34,6 +35,8 @@ function App() {
           <Route path = "/forget-password" element = {<Forgetpassword/>} />
           <Route path="/gallery" element={<Gallery/>} />
           <Route path="/about" element={<About/>} />
+          <Route path="/contact" element={<Contact/>} />
+
           {/* Protected Admin Routes */}
           <Route path="/admin" element={<AdminRoute />}>
             <Route path="dashboard" element={<AdminDashboard />} />
