@@ -178,7 +178,7 @@ const handleConfirmBooking = async () => {
       {/* Tour Header */}
       <div className="bg-white rounded-lg shadow-md p-6 mb-6">
         <h1 className="text-3xl md:text-4xl font-bold text-gray-800">
-          {tour.name} ★★★★
+          {tour.name} 
         </h1>
         <p className="text-gray-600 mt-2 flex items-center">
           <Globe size={18} className="mr-2" /> 

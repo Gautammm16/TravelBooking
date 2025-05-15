@@ -7,23 +7,56 @@ import { ThreeDots } from 'react-loader-spinner';
 import AdminNavbar from "../../components/admin/AdminNavbar.jsx";
 
 const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Required'),
-  duration: Yup.number().required('Required').positive('Must be positive'),
-  maxGroupSize: Yup.number().required('Required').positive('Must be positive'),
+  name: Yup.string().required('Tour name is required'),
+  duration: Yup.number()
+    .required('Duration is required')
+    .min(1, 'Duration must be at least 1 day')
+    .integer('Duration must be a whole number'),
+  maxGroupSize: Yup.number()
+    .required('Group size is required')
+    .min(1, 'Group size must be at least 1')
+    .integer('Group size must be a whole number'),
   difficulty: Yup.string()
-    .oneOf(['easy', 'medium', 'difficult'], 'Invalid difficulty')
-    .required('Required'),
-  price: Yup.number().required('Required').positive('Must be positive'),
+    .required('Difficulty is required')
+    .oneOf(['easy', 'medium', 'difficult'], 'Difficulty must be easy, medium, or difficult'),
+  ratingsAverage: Yup.number()
+    .min(1, 'Rating must be at least 1.0')
+    .max(5, 'Rating cannot exceed 5.0'),
+  price: Yup.number()
+    .required('Price is required')
+    .min(0, 'Price cannot be negative'),
   priceDiscount: Yup.number()
-    .nullable()
-    .transform((value) => (isNaN(value) || value === "" ? null : Number(value)))
-    .test('is-less-than-price', 'Discount price must be below regular price', function (value) {
-      const { price } = this.parent;
-      return value === null || value < price;
-    }),
-  imageCover: Yup.string().required('Required'),
-  country: Yup.string().required('Required'),
-  summary: Yup.string().required('Required'),
+    .test(
+      'is-discount-lower',
+      'Discount price must be below regular price or 0',
+      function(value) {
+        // Allow priceDiscount to be 0 or null/undefined, or less than price
+        return value === 0 || value === null || value === undefined || value < this.parent.price;
+      }
+    ),
+  summary: Yup.string().required('Summary is required'),
+  description: Yup.string(),
+  imageCover: Yup.string().required('Cover image is required'),
+  images: Yup.array(),
+  startDates: Yup.string().required('Start dates are required'),
+  country: Yup.string().required('Country is required'),
+  startLocation: Yup.object().shape({
+    description: Yup.string(),
+    coordinates: Yup.array()
+      .of(Yup.number())
+      .length(2, 'Must have exactly 2 coordinates')
+  }),
+  locations: Yup.array().of(
+    Yup.object().shape({
+      description: Yup.string(),
+      coordinates: Yup.array()
+        .of(Yup.number())
+        .length(2, 'Must have exactly 2 coordinates'),
+      day: Yup.number()
+        .integer('Day must be a whole number')
+        .min(1, 'Day must be at least 1')
+    })
+  )
 });
 
 const AdminUpdateTour = () => {
@@ -50,95 +83,101 @@ const AdminUpdateTour = () => {
     };
     fetchTour();
   }, [id]);
-const handleSubmit = async (values, { setSubmitting }) => {
+
+const handleSubmit = async (values, { setSubmitting, setErrors }) => {
   try {
-    const formData = new FormData();
+    // Create a clean object with only the data needed for the update
+    const updateData = {
+      name: values.name,
+      duration: Number(values.duration),
+      maxGroupSize: Number(values.maxGroupSize),
+      difficulty: values.difficulty,
+      ratingsAverage: Number(values.ratingsAverage) || 4.5, // default if empty
+      price: Number(values.price),
+      summary: values.summary,
+      country: values.country,
+      imageCover: values.imageCover,
+      // Handle priceDiscount properly - default to 0 if empty
+      priceDiscount: values.priceDiscount === '' ? 0 : Number(values.priceDiscount),
+    };
 
-    // Flatten and append all scalar values
-    formData.append('name', values.name);
-    formData.append('duration', values.duration);
-    formData.append('maxGroupSize', values.maxGroupSize);
-    formData.append('difficulty', values.difficulty);
-    formData.append('ratingsAverage', values.ratingsAverage);
-    formData.append('ratingsQuantity', values.ratingsQuantity);
-    formData.append('price', values.price);
-    formData.append('priceDiscount', values.priceDiscount);
-    formData.append('summary', values.summary);
-    formData.append('description', values.description);
-    formData.append('country', values.country);
+    // Optional fields
+    if (values.description) updateData.description = values.description;
+    
+    // Handle images array - ensure it's always an array
+    updateData.images = values.images?.filter(img => img) || [];
 
-    // Cover image
-    if (values.imageCover && values.imageCover instanceof File) {
-      formData.append('imageCover', values.imageCover);
+    // Handle start dates (convert from string to array)
+    if (values.startDates) {
+      updateData.startDates = values.startDates
+        .split(',')
+        .map(date => {
+          const trimmed = date.trim();
+          return trimmed ? new Date(trimmed).toISOString() : null;
+        })
+        .filter(date => date !== null && date !== 'Invalid Date');
     }
 
-    // Images array
-    if (Array.isArray(values.images)) {
-      values.images.forEach(img => {
-        if (img instanceof File) {
-          formData.append('images', img);
-        }
-      });
-    }
-
-    // Guides
-    const guidesArray = Array.isArray(values.guides)
-      ? values.guides
-      : typeof values.guides === 'string'
-        ? values.guides.split(',').map(g => g.trim()).filter(Boolean)
-        : [];
-
-    guidesArray.forEach(g => formData.append('guides', g));
-
-    // Start dates
-    if (Array.isArray(values.startDates)) {
-      values.startDates
-        .filter(Boolean)
-        .forEach(date => formData.append('startDates', date));
-    }
-
-    // Start location (nested)
+    // Handle start location with proper coordinate conversion
     if (values.startLocation) {
-      formData.append('startLocation[description]', values.startLocation.description);
-      formData.append('startLocation[type]', 'Point');
-      formData.append('startLocation[coordinates][0]', values.startLocation.coordinates[0]);
-      formData.append('startLocation[coordinates][1]', values.startLocation.coordinates[1]);
+      updateData.startLocation = {
+        type: 'Point',
+        description: values.startLocation.description,
+        coordinates: [
+          Number(values.startLocation.coordinates[0]),
+          Number(values.startLocation.coordinates[1])
+        ]
+      };
+    }
+    
+    // Handle locations with proper data conversion
+    if (values.locations && values.locations.length > 0) {
+      updateData.locations = values.locations.map(loc => ({
+        type: 'Point',
+        description: loc.description,
+        coordinates: [
+          Number(loc.coordinates[0]),
+          Number(loc.coordinates[1])
+        ],
+        day: Number(loc.day)
+      }));
     }
 
-    // Locations array (nested)
-    if (Array.isArray(values.locations)) {
-      values.locations.forEach((loc, index) => {
-        formData.append(`locations[${index}][description]`, loc.description);
-        formData.append(`locations[${index}][type]`, 'Point');
-        formData.append(`locations[${index}][coordinates][0]`, loc.coordinates[0]);
-        formData.append(`locations[${index}][coordinates][1]`, loc.coordinates[1]);
-        formData.append(`locations[${index}][day]`, loc.day);
-      });
-    }
+    console.log('Final update payload:', JSON.stringify(updateData, null, 2));
 
-    console.log('Submitting update with FormData:', [...formData.entries()]);
-
-    const { data } = await api.patch(`/v1/tours/${id}`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-
-    console.log('Response from server:', data);
+    // Send the update request
+    const { data } = await api.patch(`/v1/tours/${id}`, updateData);
 
     if (data.status === 'success') {
-      alert('Tour updated successfully!');
-      navigate('/admin/tours');
+      setUpdateSuccess(true);
+      setTimeout(() => navigate('/admin/manage-tours'), 1500);
     }
   } catch (err) {
-    console.error('Error updating tour:', err);
-    setError(err.response?.data?.message || 'Error updating tour');
-    alert(`Failed to update tour: ${err.response?.data?.message || 'Unknown error'}`);
+    console.error('Full error:', err);
+    console.log('Error response:', err.response?.data);
+
+    // Handle Mongoose validation errors
+    if (err.response?.data?.errors) {
+      const formErrors = {};
+      Object.entries(err.response.data.errors).forEach(([field, message]) => {
+        // Convert nested errors to Formik format (e.g., 'startLocation.coordinates')
+        const fieldPath = field.includes('.') ? field : field;
+        formErrors[fieldPath] = message;
+      });
+      setErrors(formErrors);
+    } 
+    // Handle single field errors (like priceDiscount)
+    else if (err.response?.data?.field) {
+      setErrors({ [err.response.data.field]: err.response.data.message });
+    }
+    // Handle generic error messages
+    else {
+      setError(err.response?.data?.message || 'Error updating tour');
+    }
   } finally {
     setSubmitting(false);
   }
 };
-
 
   if (loading) {
     return (
@@ -159,7 +198,7 @@ const handleSubmit = async (values, { setSubmitting }) => {
           <p className="text-xl font-bold">Error</p>
           <p>{error}</p>
           <button 
-            onClick={() => navigate('/admin/tours')} 
+            onClick={() => navigate('/')} 
             className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
           >
             Back to Tours
@@ -170,10 +209,9 @@ const handleSubmit = async (values, { setSubmitting }) => {
   }
 
   return (
-   <div className="flex w-full min-h-screen bg-gray-50">
-    {/* Sidebar */}
-    <AdminNavbar />
-    <div className="flex-1 p-8 overflow-y-auto">
+    <div className="flex w-full min-h-screen bg-gray-50">
+      <AdminNavbar />
+      <div className="flex-1 p-8 overflow-y-auto">
         <h2 className="text-2xl font-bold mb-6">Update Tour</h2>
         
         {updateSuccess && (
@@ -194,451 +232,379 @@ const handleSubmit = async (values, { setSubmitting }) => {
               name: tour.name || '',
               duration: tour.duration || '',
               maxGroupSize: tour.maxGroupSize || '',
-              difficulty: tour.difficulty || '',
+              difficulty: tour.difficulty || 'medium',
+              ratingsAverage: tour.ratingsAverage || 4.5,
               price: tour.price || '',
               priceDiscount: tour.priceDiscount || '',
               summary: tour.summary || '',
               description: tour.description || '',
               imageCover: tour.imageCover || '',
-              images: Array.isArray(tour.images) ? tour.images : [],
+              images: tour.images || [],
               startDates: Array.isArray(tour.startDates) 
-                ? tour.startDates.map(date => date.slice(0, 10)) 
-                : [''],
+                ? tour.startDates.join(', ') 
+                : '',
+              country: tour.country || '',
               startLocation: {
                 description: tour.startLocation?.description || '',
-                address: tour.startLocation?.address || '',
-                coordinates: Array.isArray(tour.startLocation?.coordinates) 
-                  ? tour.startLocation.coordinates 
-                  : [0, 0],
-                type: tour.startLocation?.type || 'Point'
+                coordinates: tour.startLocation?.coordinates || [0, 0]
               },
-              locations: Array.isArray(tour.locations) 
-                ? tour.locations.map(loc => ({
-                    description: loc.description || '',
-                    address: loc.address || '',
-                    coordinates: loc.coordinates || [0, 0],
-                    day: loc.day || 1,
-                    type: loc.type || 'Point'
-                  }))
-                : [],
-              guides: Array.isArray(tour.guides) 
-                ? tour.guides.map(g => typeof g === 'object' ? g._id : g) 
-                : [],
-              country: tour.country || '',
+              locations: tour.locations?.map(loc => ({
+                description: loc.description || '',
+                coordinates: loc.coordinates || [0, 0],
+                day: loc.day || 1
+              })) || []
             }}
             validationSchema={validationSchema}
             onSubmit={handleSubmit}
-            enableReinitialize={true}
+            enableReinitialize
           >
             {({ isSubmitting, values, setFieldValue }) => (
               <Form className="space-y-4">
-                {/* Name */}
-                <div>
-                  <label htmlFor="name" className="block mb-1 font-medium">Tour Name</label>
-                  <Field 
-                    id="name" 
-                    name="name" 
-                    type="text" 
-                    className="w-full p-2 border rounded" 
-                  />
-                  <ErrorMessage name="name" component="div" className="text-red-500 text-sm" />
-                </div>
-
-                {/* Duration and Group Size */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Basic Information */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold">Basic Information</h3>
+                  
                   <div>
-                    <label htmlFor="duration" className="block mb-1 font-medium">Duration (days)</label>
-                    <Field 
-                      id="duration" 
-                      name="duration" 
-                      type="number" 
-                      className="w-full p-2 border rounded" 
+                    <label htmlFor="name" className="block mb-1">Tour Name*</label>
+                    <Field
+                      name="name"
+                      type="text"
+                      className="w-full p-2 border rounded"
                     />
-                    <ErrorMessage name="duration" component="div" className="text-red-500 text-sm" />
+                    <ErrorMessage name="name" component="div" className="text-red-500" />
                   </div>
-                  <div>
-                    <label htmlFor="maxGroupSize" className="block mb-1 font-medium">Max Group Size</label>
-                    <Field 
-                      id="maxGroupSize" 
-                      name="maxGroupSize" 
-                      type="number" 
-                      className="w-full p-2 border rounded" 
-                    />
-                    <ErrorMessage name="maxGroupSize" component="div" className="text-red-500 text-sm" />
-                  </div>
-                </div>
 
-                {/* Difficulty */}
-                <div>
-                  <label htmlFor="difficulty" className="block mb-1 font-medium">Difficulty</label>
-                  <Field 
-                    as="select" 
-                    id="difficulty" 
-                    name="difficulty" 
-                    className="w-full p-2 border rounded"
-                  >
-                    <option value="">Select Difficulty</option>
-                    <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
-                    <option value="difficult">Difficult</option>
-                  </Field>
-                  <ErrorMessage name="difficulty" component="div" className="text-red-500 text-sm" />
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="duration" className="block mb-1">Duration (days)*</label>
+                      <Field
+                        name="duration"
+                        type="number"
+                        className="w-full p-2 border rounded"
+                      />
+                      <ErrorMessage name="duration" component="div" className="text-red-500" />
+                    </div>
 
-                {/* Price and Discount */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="price" className="block mb-1 font-medium">Price</label>
-                    <Field 
-                      id="price" 
-                      name="price" 
-                      type="number" 
-                      className="w-full p-2 border rounded" 
-                    />
-                    <ErrorMessage name="price" component="div" className="text-red-500 text-sm" />
+                    <div>
+                      <label htmlFor="maxGroupSize" className="block mb-1">Max Group Size*</label>
+                      <Field
+                        name="maxGroupSize"
+                        type="number"
+                        className="w-full p-2 border rounded"
+                      />
+                      <ErrorMessage name="maxGroupSize" component="div" className="text-red-500" />
+                    </div>
                   </div>
-                  <div>
-                    <label htmlFor="priceDiscount" className="block mb-1 font-medium">Price Discount (optional)</label>
-                    <Field 
-                      id="priceDiscount" 
-                      name="priceDiscount" 
-                      type="number" 
-                      className="w-full p-2 border rounded" 
-                    />
-                    <ErrorMessage name="priceDiscount" component="div" className="text-red-500 text-sm" />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="difficulty" className="block mb-1">Difficulty*</label>
+                      <Field
+                        as="select"
+                        name="difficulty"
+                        className="w-full p-2 border rounded"
+                      >
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="difficult">Difficult</option>
+                      </Field>
+                      <ErrorMessage name="difficulty" component="div" className="text-red-500" />
+                    </div>
+
+                    <div>
+                      <label htmlFor="country" className="block mb-1">Country*</label>
+                      <Field
+                        name="country"
+                        type="text"
+                        className="w-full p-2 border rounded"
+                      />
+                      <ErrorMessage name="country" component="div" className="text-red-500" />
+                    </div>
                   </div>
                 </div>
 
-                {/* Country */}
-                <div>
-                  <label htmlFor="country" className="block mb-1 font-medium">Country</label>
-                  <Field 
-                    id="country" 
-                    name="country" 
-                    type="text" 
-                    className="w-full p-2 border rounded" 
-                  />
-                  <ErrorMessage name="country" component="div" className="text-red-500 text-sm" />
+                {/* Pricing */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold">Pricing</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <label htmlFor="price" className="block mb-1">Price*</label>
+                      <Field
+                        name="price"
+                        type="number"
+                        className="w-full p-2 border rounded"
+                      />
+                      <ErrorMessage name="price" component="div" className="text-red-500" />
+                    </div>
+
+                    <div>
+                      <label htmlFor="priceDiscount" className="block mb-1">Price Discount</label>
+                      <Field
+                        name="priceDiscount"
+                        type="number"
+                        className="w-full p-2 border rounded"
+                        placeholder="0"
+                      />
+                      <div className="text-xs text-gray-500 mt-1">Leave empty or set to 0 for no discount</div>
+                      <ErrorMessage name="priceDiscount" component="div" className="text-red-500" />
+                    </div>
+
+                    <div>
+                      <label htmlFor="ratingsAverage" className="block mb-1">Rating (1-5)</label>
+                      <Field
+                        name="ratingsAverage"
+                        type="number"
+                        step="0.1"
+                        className="w-full p-2 border rounded"
+                      />
+                      <ErrorMessage name="ratingsAverage" component="div" className="text-red-500" />
+                    </div>
+                  </div>
                 </div>
 
-                {/* Summary and Description */}
-                <div>
-                  <label htmlFor="summary" className="block mb-1 font-medium">Summary</label>
-                  <Field 
-                    id="summary" 
-                    name="summary" 
-                    as="textarea" 
-                    rows="2" 
-                    className="w-full p-2 border rounded" 
-                  />
-                  <ErrorMessage name="summary" component="div" className="text-red-500 text-sm" />
-                </div>
+                {/* Description */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold">Tour Description</h3>
+                  
+                  <div>
+                    <label htmlFor="summary" className="block mb-1">Summary*</label>
+                    <Field
+                      name="summary"
+                      as="textarea"
+                      rows="3"
+                      className="w-full p-2 border rounded"
+                    />
+                    <ErrorMessage name="summary" component="div" className="text-red-500" />
+                  </div>
 
-                <div>
-                  <label htmlFor="description" className="block mb-1 font-medium">Description (optional)</label>
-                  <Field 
-                    id="description" 
-                    name="description" 
-                    as="textarea" 
-                    rows="4" 
-                    className="w-full p-2 border rounded" 
-                  />
-                </div>
-
-                {/* Image Cover */}
-                <div>
-                  <label htmlFor="imageCover" className="block mb-1 font-medium">Cover Image</label>
-                  <Field 
-                    id="imageCover" 
-                    name="imageCover" 
-                    type="text" 
-                    className="w-full p-2 border rounded" 
-                    placeholder="image-filename.jpg" 
-                  />
-                  <ErrorMessage name="imageCover" component="div" className="text-red-500 text-sm" />
+                  <div>
+                    <label htmlFor="description" className="block mb-1">Description</label>
+                    <Field
+                      name="description"
+                      as="textarea"
+                      rows="5"
+                      className="w-full p-2 border rounded"
+                    />
+                  </div>
                 </div>
 
                 {/* Images */}
-                <div>
-                  <label className="block mb-1 font-medium">Additional Images</label>
-                  <FieldArray name="images">
-                    {({ remove, push }) => (
-                      <div className="space-y-2">
-                        {values.images.length > 0 ? (
-                          values.images.map((image, index) => (
-                            <div key={index} className="flex items-center space-x-2">
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold">Images</h3>
+                  
+                  <div>
+                    <label htmlFor="imageCover" className="block mb-1">Cover Image URL*</label>
+                    <Field
+                      name="imageCover"
+                      type="text"
+                      className="w-full p-2 border rounded"
+                    />
+                    {values.imageCover && (
+                      <img 
+                        src={values.imageCover} 
+                        alt="Cover preview" 
+                        className="mt-2 h-32 object-cover"
+                      />
+                    )}
+                    <ErrorMessage name="imageCover" component="div" className="text-red-500" />
+                  </div>
+
+                  <div>
+                    <label className="block mb-1">Additional Images</label>
+                    <FieldArray name="images">
+                      {({ push, remove }) => (
+                        <div className="space-y-2">
+                          {values.images.map((image, index) => (
+                            <div key={index} className="flex items-center gap-2">
                               <Field
                                 name={`images[${index}]`}
                                 type="text"
-                                className="flex-grow p-2 border rounded"
-                                placeholder="image-filename.jpg"
+                                className="flex-1 p-2 border rounded"
                               />
                               <button
                                 type="button"
                                 onClick={() => remove(index)}
-                                className="p-2 text-red-500 hover:bg-red-100 rounded"
+                                className="p-2 text-red-500"
                               >
                                 Remove
                               </button>
                             </div>
-                          ))
-                        ) : (
-                          <div className="text-gray-500 italic">No additional images</div>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => push('')}
-                          className="mt-2 text-blue-500 hover:text-blue-700"
-                        >
-                          Add Image
-                        </button>
-                      </div>
-                    )}
-                  </FieldArray>
-                </div>
-
-                {/* Start Dates */}
-                <div>
-                  <label className="block mb-1 font-medium">Start Dates</label>
-                  <FieldArray name="startDates">
-                    {({ push, remove }) => (
-                      <div className="space-y-2">
-                        {values.startDates.length > 0 ? (
-                          values.startDates.map((date, index) => (
-                            <div key={index} className="flex items-center space-x-2">
-                              <Field 
-                                type="date" 
-                                name={`startDates[${index}]`} 
-                                className="flex-grow p-2 border rounded" 
-                              />
-                              <button 
-                                type="button" 
-                                onClick={() => remove(index)} 
-                                className="p-2 text-red-500 hover:bg-red-100 rounded"
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-gray-500 italic">No start dates</div>
-                        )}
-                        <button 
-                          type="button" 
-                          onClick={() => push('')} 
-                          className="mt-2 text-blue-500 hover:text-blue-700"
-                        >
-                          Add Date
-                        </button>
-                      </div>
-                    )}
-                  </FieldArray>
-                </div>
-
-                {/* Start Location */}
-                <div className="border rounded p-4 bg-gray-50">
-                  <h3 className="font-bold mb-3">Start Location</h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label htmlFor="startLocation.description" className="block mb-1">Description</label>
-                      <Field 
-                        id="startLocation.description" 
-                        name="startLocation.description" 
-                        className="w-full p-2 border rounded" 
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="startLocation.address" className="block mb-1">Address</label>
-                      <Field 
-                        id="startLocation.address" 
-                        name="startLocation.address" 
-                        className="w-full p-2 border rounded" 
-                      />
-                    </div>
-                    <div>
-                      <label className="block mb-1">Coordinates (lng, lat)</label>
-                      <div className="flex space-x-2">
-                        <div className="w-1/2">
-                          <label htmlFor="startLocation.coordinates[0]" className="text-xs text-gray-500">Longitude</label>
-                          <Field 
-                            id="startLocation.coordinates[0]" 
-                            name="startLocation.coordinates[0]" 
-                            type="number" 
-                            step="0.000001"
-                            className="w-full p-2 border rounded" 
-                          />
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => push('')}
+                            className="text-blue-500"
+                          >
+                            Add Image URL
+                          </button>
                         </div>
-                        <div className="w-1/2">
-                          <label htmlFor="startLocation.coordinates[1]" className="text-xs text-gray-500">Latitude</label>
-                          <Field 
-                            id="startLocation.coordinates[1]" 
-                            name="startLocation.coordinates[1]" 
-                            type="number" 
-                            step="0.000001"
-                            className="w-full p-2 border rounded" 
-                          />
-                        </div>
-                      </div>
+                      )}
+                    </FieldArray>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {values.images.filter(img => img).map((img, index) => (
+                        <img 
+                          key={index} 
+                          src={img} 
+                          alt={`Preview ${index}`} 
+                          className="h-24 object-cover"
+                        />
+                      ))}
                     </div>
                   </div>
                 </div>
 
-                {/* Locations Array */}
-                <div className="border rounded p-4 bg-gray-50">
-                  <h3 className="font-bold mb-3">Tour Locations</h3>
-                  <FieldArray name="locations">
-                    {({ push, remove }) => (
-                      <div className="space-y-4">
-                        {values.locations.length > 0 ? (
-                          values.locations.map((loc, index) => (
-                            <div key={index} className="border p-3 mb-3 rounded bg-white shadow-sm">
-                              <div className="flex justify-between items-center mb-2">
-                                <h4 className="font-medium">Location #{index + 1}</h4>
-                                <button 
-                                  type="button" 
-                                  onClick={() => remove(index)} 
-                                  className="text-red-500 hover:text-red-700"
-                                >
-                                  Remove
-                                </button>
-                              </div>
-                              
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                <div>
-                                  <label className="block mb-1 text-sm">Description</label>
-                                  <Field 
-                                    name={`locations[${index}].description`} 
-                                    className="w-full p-2 border rounded" 
-                                  />
-                                </div>
-                                
-                                <div>
-                                  <label className="block mb-1 text-sm">Day</label>
-                                  <Field 
-                                    name={`locations[${index}].day`} 
-                                    type="number" 
-                                    min="1"
-                                    className="w-full p-2 border rounded" 
-                                  />
-                                </div>
-                              </div>
-                              
-                              <div className="mt-2">
-                                <label className="block mb-1 text-sm">Address</label>
-                                <Field 
-                                  name={`locations[${index}].address`} 
-                                  className="w-full p-2 border rounded" 
-                                />
-                              </div>
-                              
-                              <div className="mt-2">
-                                <label className="block mb-1 text-sm">Coordinates (lng, lat)</label>
-                                <div className="flex space-x-2">
-                                  <div className="w-1/2">
-                                    <label className="text-xs text-gray-500">Longitude</label>
-                                    <Field 
-                                      name={`locations[${index}].coordinates[0]`} 
-                                      type="number" 
-                                      step="0.000001"
-                                      className="w-full p-2 border rounded" 
-                                    />
-                                  </div>
-                                  <div className="w-1/2">
-                                    <label className="text-xs text-gray-500">Latitude</label>
-                                    <Field 
-                                      name={`locations[${index}].coordinates[1]`} 
-                                      type="number" 
-                                      step="0.000001"
-                                      className="w-full p-2 border rounded" 
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="text-gray-500 italic">No locations added</div>
-                        )}
-                        <button 
-                          type="button" 
-                          onClick={() => push({ 
-                            description: '', 
-                            address: '', 
-                            coordinates: [0, 0], 
-                            day: values.locations.length > 0 
-                              ? Math.max(...values.locations.map(l => l.day || 0)) + 1 
-                              : 1,
-                            type: 'Point' 
-                          })} 
-                          className="w-full p-2 border border-blue-500 text-blue-500 rounded hover:bg-blue-50"
-                        >
-                          Add Location
-                        </button>
-                      </div>
-                    )}
-                  </FieldArray>
+                {/* Dates */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold">Tour Dates</h3>
+                  
+                  <div>
+                    <label htmlFor="startDates" className="block mb-1">Start Dates* (comma separated)</label>
+                    <Field
+                      name="startDates"
+                      as="textarea"
+                      rows="3"
+                      className="w-full p-2 border rounded"
+                      placeholder="2025-07-05, 2025-08-27, 2026-10-24"
+                    />
+                    <ErrorMessage name="startDates" component="div" className="text-red-500" />
+                  </div>
                 </div>
 
-                {/* Guides */}
-                <div>
-                  <label className="block mb-1 font-medium">Tour Guides</label>
-                  <FieldArray name="guides">
-                    {({ remove, push }) => (
-                      <div className="space-y-2">
-                        {values.guides.length > 0 ? (
-                          values.guides.map((guide, index) => (
-                            <div key={index} className="flex items-center space-x-2">
-                              <Field
-                                name={`guides[${index}]`}
-                                type="text"
-                                className="flex-grow p-2 border rounded"
-                                placeholder="Guide ID"
-                              />
+                {/* Start Location */}
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold">Start Location</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="startLocation.description" className="block mb-1">Description</label>
+                      <Field
+                        name="startLocation.description"
+                        type="text"
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="startLocation.coordinates.0" className="block mb-1">Longitude</label>
+                      <Field
+                        name="startLocation.coordinates.0"
+                        type="number"
+                        step="0.000001"
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="startLocation.coordinates.1" className="block mb-1">Latitude</label>
+                      <Field
+                        name="startLocation.coordinates.1"
+                        type="number"
+                        step="0.000001"
+                        className="w-full p-2 border rounded"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Locations */}
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-semibold">Tour Locations</h3>
+                    <button
+                      type="button"
+                      onClick={() => setFieldValue('locations', [
+                        ...values.locations,
+                        { description: '', coordinates: [0, 0], day: values.locations.length + 1 }
+                      ])}
+                      className="bg-blue-500 text-white px-3 py-1 rounded"
+                    >
+                      Add Location
+                    </button>
+                  </div>
+                  
+                  <FieldArray name="locations">
+                    {({ remove }) => (
+                      <div className="space-y-4">
+                        {values.locations.map((location, index) => (
+                          <div key={index} className="border p-4 rounded">
+                            <div className="flex justify-between items-center mb-3">
+                              <h4 className="font-medium">Location {index + 1}</h4>
                               <button
                                 type="button"
                                 onClick={() => remove(index)}
-                                className="p-2 text-red-500 hover:bg-red-100 rounded"
+                                className="text-red-500"
                               >
                                 Remove
                               </button>
                             </div>
-                          ))
-                        ) : (
-                          <div className="text-gray-500 italic">No guides assigned</div>
-                        )}
-                        <button
-                          type="button"
-                          onClick={() => push('')}
-                          className="mt-2 text-blue-500 hover:text-blue-700"
-                        >
-                          Add Guide
-                        </button>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block mb-1">Description</label>
+                                <Field
+                                  name={`locations.${index}.description`}
+                                  type="text"
+                                  className="w-full p-2 border rounded"
+                                />
+                              </div>
+                              
+                              <div>
+                                <label className="block mb-1">Day</label>
+                                <Field
+                                  name={`locations.${index}.day`}
+                                  type="number"
+                                  min="1"
+                                  className="w-full p-2 border rounded"
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
+                              <div>
+                                <label className="block mb-1">Longitude</label>
+                                <Field
+                                  name={`locations.${index}.coordinates.0`}
+                                  type="number"
+                                  step="0.000001"
+                                  className="w-full p-2 border rounded"
+                                />
+                              </div>
+                              
+                              <div>
+                                <label className="block mb-1">Latitude</label>
+                                <Field
+                                  name={`locations.${index}.coordinates.1`}
+                                  type="number"
+                                  step="0.000001"
+                                  className="w-full p-2 border rounded"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </FieldArray>
                 </div>
 
                 {/* Submit */}
-                <div className="pt-4 border-t flex justify-between">
+                <div className="flex justify-end gap-4 mt-6">
                   <button
                     type="button"
                     onClick={() => navigate('/admin/tours')}
-                    className="bg-gray-300 text-gray-800 px-6 py-2 rounded hover:bg-gray-400"
+                    className="px-4 py-2 border rounded"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
+                    disabled={isSubmitting}
                     className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600 disabled:bg-blue-300"
                   >
-                    {isSubmitting ? (
-                      <div className="flex items-center">
-                        <ThreeDots height="20" width="20" radius="4" color="#fff" visible={true} />
-                        <span className="ml-2">Updating...</span>
-                      </div>
-                    ) : (
-                      'Update Tour'
-                    )}
+                    {isSubmitting ? 'Updating...' : 'Update Tour'}
                   </button>
                 </div>
               </Form>

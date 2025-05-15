@@ -272,10 +272,36 @@ export const getTour = async (req, res) => {
 // ===========================
 export const updateTour = async (req, res) => {
   try {
-    const tour = await Tour.findByIdAndUpdate(req.params.tourId, req.body, {
+    // Handle the priceDiscount validation manually
+    if (req.body.priceDiscount !== undefined) {
+      if (req.body.priceDiscount < 0) {
+        return res.status(400).json({
+          status: 'fail',
+          message: 'Discount price cannot be negative',
+          field: 'priceDiscount'  // Add field information
+        });
+      }
+      
+      if (req.body.priceDiscount > 0 && req.body.priceDiscount >= req.body.price) {
+        return res.status(400).json({
+          status: 'fail',
+          message: 'Discount price must be below regular price or 0',
+          field: 'priceDiscount'  // Add field information
+        });
+      }
+    }
+
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
     });
+
+    if (!tour) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'No tour found with that ID'
+      });
+    }
 
     res.status(200).json({
       status: 'success',
@@ -284,6 +310,20 @@ export const updateTour = async (req, res) => {
       }
     });
   } catch (err) {
+    // Improved error handling for Mongoose validation errors
+    if (err.name === 'ValidationError') {
+      const errors = {};
+      Object.keys(err.errors).forEach((key) => {
+        errors[key] = err.errors[key].message;
+      });
+      
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Validation failed',
+        errors  // Send detailed validation errors
+      });
+    }
+    
     res.status(400).json({
       status: 'fail',
       message: err.message
