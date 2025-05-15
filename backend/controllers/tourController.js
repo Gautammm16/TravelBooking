@@ -11,6 +11,26 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
+export const getToursCount = async (req, res, next) => {
+  const count = await Tour.countDocuments();
+  res.status(200).json({
+    status: 'success',
+    data: {
+      count
+    }
+  });
+};
+export const getCountriesCount = async (req, res, next) => {
+  const countries = await Tour.distinct('country');
+  res.status(200).json({
+    status: 'success',
+    data: {
+      count: countries.length
+    }
+  })
+};
+
+
 export const getTourStats = async (req, res) => {
   try {
     const tourCount = await Tour.countDocuments();

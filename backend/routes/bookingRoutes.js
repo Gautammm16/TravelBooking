@@ -5,7 +5,8 @@ import {
   getAllBookings,
   getUserBookings,
   updateBooking,
-  deleteBooking
+  deleteBooking,
+  getBookingsCount
 } from '../controllers/bookingController.js';
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
 
@@ -13,6 +14,7 @@ const router = express.Router();
 
 // All routes below this will require authentication
 router.use(protect);
+router.get('/count', getBookingsCount);
 
 // User-specific routes
 router.get('/my-bookings', getUserBookings);

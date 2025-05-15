@@ -9,7 +9,9 @@ import {
   updateTour,
   deleteTour,
   uploadTourImage,
-  getTourStats
+  getTourStats,
+  getCountriesCount,
+  getToursCount
 } from '../controllers/tourController.js';
 
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
@@ -21,6 +23,9 @@ const router = express.Router();
 
 // Route to get tour statistics
 router.get('/stats', getTourStats);
+
+router.get('/countries', getCountriesCount);
+router.get('/count', getToursCount);
 
 // Nested review routes
 router.use('/:tourId/reviews', reviewRouter);

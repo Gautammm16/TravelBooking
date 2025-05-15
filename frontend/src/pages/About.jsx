@@ -1,6 +1,47 @@
+import { useEffect, useState } from 'react';
+import api from '../services/api';
 import { MapPin, Globe, Users, CheckCircle, Phone, Mail, Clock } from 'lucide-react';
+import { ThreeDots } from 'react-loader-spinner';
 
 const About = () => {
+    const [stats, setStats] = useState({
+    countries: 0,
+    travelers: 0,
+    tours: 0,
+    loading: true,
+    error: null
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Fetch all stats in parallel
+        const [countriesRes, bookingsRes, toursRes] = await Promise.all([
+          api.get('/v1/tours/countries'),
+          api.get('/v1/bookings/count'),
+          api.get('/v1/tours/count')
+        ]);
+
+        setStats({
+          countries: countriesRes.data.data.count || 0,
+          travelers: bookingsRes.data.data.count || 0,
+          tours: toursRes.data.data.count || 0,
+          loading: false,
+          error: null
+        });
+      } catch (err) {
+        console.error('Failed to fetch stats:', err);
+        setStats(prev => ({
+          ...prev,
+          loading: false,
+          error: 'Failed to load statistics'
+        }));
+      }
+    };
+
+    fetchStats();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -76,25 +117,38 @@ const About = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-blue-600 text-white">
+   <section className="py-16 bg-blue-600 text-white">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="p-6">
-              <Globe className="w-12 h-12 mx-auto mb-4" />
-              <h3 className="text-4xl font-bold mb-2">57+</h3>
-              <p className="text-lg">Countries Covered</p>
+          {stats.loading ? (
+            <div className="flex justify-center">
+              <ThreeDots 
+                height="50" 
+                width="50" 
+                color="#ffffff" 
+                ariaLabel="loading" 
+              />
             </div>
-            <div className="p-6">
-              <Users className="w-12 h-12 mx-auto mb-4" />
-              <h3 className="text-4xl font-bold mb-2">10,000+</h3>
-              <p className="text-lg">Happy Travelers</p>
+          ) : stats.error ? (
+            <p className="text-center">{stats.error}</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              <div className="p-6">
+                <Globe className="w-12 h-12 mx-auto mb-4" />
+                <h3 className="text-4xl font-bold mb-2">{stats.countries}+</h3>
+                <p className="text-lg">Countries Covered</p>
+              </div>
+              <div className="p-6">
+                <Users className="w-12 h-12 mx-auto mb-4" />
+                <h3 className="text-4xl font-bold mb-2">{stats.travelers}+</h3>
+                <p className="text-lg">Happy Travelers</p>
+              </div>
+              <div className="p-6">
+                <MapPin className="w-12 h-12 mx-auto mb-4" />
+                <h3 className="text-4xl font-bold mb-2">{stats.tours}+</h3>
+                <p className="text-lg">Unique Experiences</p>
+              </div>
             </div>
-            <div className="p-6">
-              <MapPin className="w-12 h-12 mx-auto mb-4" />
-              <h3 className="text-4xl font-bold mb-2">250+</h3>
-              <p className="text-lg">Unique Experiences</p>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -127,94 +181,7 @@ const About = () => {
   </div>
 </section>
 
-      {/* Contact Section */}
-      {/* <section className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-md overflow-hidden">
-            <div className="md:flex">
-              <div className="md:w-1/2 bg-blue-700 text-white p-8 md:p-12">
-                <h2 className="text-3xl font-bold mb-6">Get In Touch</h2>
-                <div className="space-y-6">
-                  <div className="flex items-start">
-                    <MapPin className="flex-shrink-0 mt-1 mr-4" />
-                    <div>
-                      <h3 className="font-semibold text-lg">Our Office</h3>
-                      <p>123 Travel Street, Suite 456<br />Adventure City, AC 12345</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <Phone className="flex-shrink-0 mt-1 mr-4" />
-                    <div>
-                      <h3 className="font-semibold text-lg">Call Us</h3>
-                      <p>+1 (555) 123-4567<br />Mon-Fri, 9am-6pm</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <Mail className="flex-shrink-0 mt-1 mr-4" />
-                    <div>
-                      <h3 className="font-semibold text-lg">Email Us</h3>
-                      <p>hello@wanderlustadventures.com<br />We reply within 24 hours</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="md:w-1/2 p-8 md:p-12">
-                <h3 className="text-2xl font-semibold text-gray-800 mb-6">Send Us a Message</h3>
-                {isSubmitted ? (
-                  <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                    Thank you! Your message has been sent. We'll get back to you soon.
-                  </div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <label htmlFor="name" className="block text-gray-700 mb-2">Your Name</label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
-                      />
-                      {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-                    </div>
-                    <div>
-                      <label htmlFor="email" className="block text-gray-700 mb-2">Email Address</label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
-                      />
-                      {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-                    </div>
-                    <div>
-                      <label htmlFor="message" className="block text-gray-700 mb-2">Your Message</label>
-                      <textarea
-                        id="message"
-                        name="message"
-                        rows="4"
-                        value={formData.message}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.message ? 'border-red-500' : 'border-gray-300'}`}
-                      ></textarea>
-                      {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
-                    </div>
-                    <button
-                      type="submit"
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200"
-                    >
-                      Send Message
-                    </button>
-                  </form>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section> */}
+   
     </div>
   );
 };
