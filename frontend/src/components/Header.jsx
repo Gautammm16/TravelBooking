@@ -93,7 +93,7 @@ const Header = () => {
               {user ? (
                 <>
                   <li><Link to="/profile" className="block px-4 py-2 hover:bg-gray-100">Profile</Link></li>
-                  <li><Link to="/bookings" className="block px-4 py-2 hover:bg-gray-100">My Bookings</Link></li>
+                  <li><Link to="/my-bookings" className="block px-4 py-2 hover:bg-gray-100">My Bookings</Link></li>
                   <li><button onClick={handleLogout} className="block w-full text-left px-4 py-2 hover:bg-gray-100">Logout</button></li>
                 </>
               ) : (
