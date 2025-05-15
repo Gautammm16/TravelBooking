@@ -32,6 +32,7 @@ const ViewDetailedTour = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [participants, setParticipants] = useState(1);
 
   useEffect(() => {
     const fetchTour = async () => {
@@ -83,21 +84,38 @@ const handleConfirmBooking = async () => {
     return;
   }
 
+  if (!participants || participants < 1) { // Add participants validation
+    setError('Please select at least 1 participant');
+    return;
+  }
+
   setIsLoading(true);
   setError(null);
+  
+  // Get the token from localStorage as a fallback if not in user object
+  const token = user?.token || localStorage.getItem('token');
+  
+  if (!token) {
+    setError('Authentication token not found. Please log in again.');
+    setIsLoading(false);
+    return;
+  }
   
   try {
     const res = await axios.post(
       'http://localhost:5000/api/v1/bookings',
       {
         tour: id,
-        price: tour.price,
-        startDate: selectedDate,
-        user: user.id // Include user ID in the request body
+        price: tour.price * participants, // Calculate total price
+        paymentMethod: 'credit-card', // Or get this from user selection
+        participants: participants,
+        startDate: selectedDate
+        // Remove user: user.id - this comes from the token
       },
       {
         headers: {
-          Authorization: `Bearer ${user.token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       }
     );
@@ -106,14 +124,36 @@ const handleConfirmBooking = async () => {
       setBookingSuccess(true);
     }
   } catch (err) {
-    setError(err.response?.data?.message || 'Booking failed. Please try again.');
     console.error('Booking error:', err);
+    
+    // More detailed error handling
+    if (err.response) {
+      // Server responded with error status code
+      if (err.response.data?.message) {
+        setError(err.response.data.message);
+      } else if (err.response.data?.error) {
+        setError(err.response.data.error);
+      } else {
+        setError('Booking failed. Please check your details and try again.');
+      }
+      
+      // Handle specific status codes
+      if (err.response.status === 401) {
+        alert('Your session has expired. Please log in again.');
+        localStorage.removeItem('token');
+        navigate('/login', { state: { from: `/tour/${id}` } });
+      }
+    } else if (err.request) {
+      // Request was made but no response received
+      setError('Network error. Please check your connection.');
+    } else {
+      // Something else happened
+      setError('An unexpected error occurred. Please try again.');
+    }
   } finally {
     setIsLoading(false);
   }
 };
-
-
 
 
   const formatDate = (dateString) => {

@@ -17,6 +17,7 @@ import Forgetpassword from './components/Forgetpassword';
 import Gallery from './pages/Gallery';
 import About from './pages/About';
 import Contact from './pages/Contact';
+import UserBookings from './pages/UserBookings';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/gallery" element={<Gallery/>} />
           <Route path="/about" element={<About/>} />
           <Route path="/contact" element={<Contact/>} />
+          <Route path="/my-bookings" element={<UserBookings/>} />
 
           {/* Protected Admin Routes */}
           <Route path="/admin" element={<AdminRoute />}>

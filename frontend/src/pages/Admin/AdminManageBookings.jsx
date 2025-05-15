@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ThreeDots } from 'react-loader-spinner';
 import api from '../../services/api';
-
 import AdminNavbar from "../../components/admin/AdminNavbar.jsx";
 
 const AdminManageBookings = () => {
@@ -11,7 +10,7 @@ const AdminManageBookings = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
-        const { data } = await api.get('/api/v1/bookings');
+        const { data } = await api.get('/v1/bookings');
         setBookings(data.data.bookings);
         setLoading(false);
       } catch (err) {
@@ -24,13 +23,33 @@ const AdminManageBookings = () => {
 
   const handleStatusChange = async (bookingId, newStatus) => {
     try {
-      await api.patch(`/api/v1/bookings/${bookingId}`, { status: newStatus });
+      await api.patch(`/v1/bookings/${bookingId}`, { status: newStatus });
       setBookings(bookings.map(booking =>
         booking._id === bookingId ? { ...booking, status: newStatus } : booking
       ));
     } catch (err) {
       alert('Error updating booking status: ' + err.message);
     }
+  };
+
+  const handleDeleteBooking = async (bookingId) => {
+    if (!window.confirm('Are you sure you want to delete this booking?')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/v1/bookings/${bookingId}`);
+      setBookings(bookings.filter(booking => booking._id !== bookingId));
+      alert('Booking deleted successfully');
+    } catch (err) {
+      alert('Error deleting booking: ' + err.message);
+    }
+  };
+
+  // Function to get user's first name
+  const getUserFirstName = (user) => {
+    if (!user) return 'N/A';
+    return user.name ? user.name.split(' ')[0] : user.email.split('@')[0];
   };
 
   return (
@@ -69,7 +88,7 @@ const AdminManageBookings = () => {
                 {bookings.map(booking => (
                   <tr key={booking._id} className="border-t">
                     <td className="px-6 py-4">{booking.tour?.name}</td>
-                    <td className="px-6 py-4">{booking.user?.name}</td>
+                    <td className="px-6 py-4">{getUserFirstName(booking.user)}</td>
                     <td className="px-6 py-4">${booking.price}</td>
                     <td className="px-6 py-4">
                       <select
@@ -83,7 +102,10 @@ const AdminManageBookings = () => {
                       </select>
                     </td>
                     <td className="px-6 py-4">
-                      <button className="text-red-500 hover:text-red-700">
+                      <button 
+                        onClick={() => handleDeleteBooking(booking._id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
                         Delete
                       </button>
                     </td>
