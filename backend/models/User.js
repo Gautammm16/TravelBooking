@@ -1,5 +1,3 @@
-
-
 import mongoose from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
@@ -9,7 +7,7 @@ const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
     required: function() {
-      return !this.socialMedia?.googleId; // Not required for Google-authenticated users
+      return !this.socialMedia?.googleId;
     },
     trim: true,
     maxlength: [50, 'First name cannot exceed 50 characters']
@@ -17,7 +15,7 @@ const userSchema = new mongoose.Schema({
   lastName: {
     type: String,
     required: function() {
-      return !this.socialMedia?.googleId; // Not required for Google-authenticated users
+      return !this.socialMedia?.googleId;
     },
     trim: true,
     maxlength: [50, 'Last name cannot exceed 50 characters']
@@ -32,7 +30,7 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: function() {
-      return !this.socialMedia?.googleId; // Not required for Google-authenticated users
+      return !this.socialMedia?.googleId;
     },
     minlength: [8, 'Password must be at least 8 characters'],
     select: false
@@ -41,7 +39,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate: {
       validator: function(el) {
-        // Skip validation if user is signing up with Google
         if (this.socialMedia?.googleId) return true;
         return el === this.password;
       },
@@ -67,7 +64,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: function() {
       if (this.socialMedia?.googleId) {
-        return this.socialMedia.googlePhoto; // Use Google photo if available
+        return this.socialMedia.googlePhoto;
       }
       const hash = crypto.createHash('md5').update(this.email).digest('hex');
       return `https://www.gravatar.com/avatar/${hash}?d=retro`;
@@ -96,13 +93,40 @@ const userSchema = new mongoose.Schema({
   isVerified: {
     type: Boolean,
     default: function() {
-      return !!this.socialMedia?.googleId; // Auto-verify Google-authenticated users
+      return !!this.socialMedia?.googleId;
     }
   },
+  // OTP Fields
+  emailVerificationOTP: {
+    type: String,
+    select: false
+  },
+  emailVerificationOTPExpires: {
+    type: Date,
+    select: false
+  },
+  otpAttempts: {
+    type: Number,
+    default: 0,
+    select: false
+  },
+  otpBlockedUntil: {
+    type: Date,
+    select: false
+  },
+  // Keep old verification token fields for backward compatibility
   verificationToken: String,
   verificationTokenExpires: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  passwordResetOTP: {
+    type: String,
+    select: false
+  },
+  passwordResetOTPExpires: {
+    type: Date,
+    select: false
+  },
   socialMedia: {
     googleId: {
       type: String,
@@ -153,12 +177,10 @@ const userSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Modified password hashing middleware to skip for Google-authenticated users
+// Password hashing middleware
 userSchema.pre('save', async function(next) {
-  // Skip if password isn't modified or user is Google-authenticated
   if (!this.isModified('password') || this.socialMedia?.googleId) return next();
   
-  // Only hash password if it exists (not Google-authenticated users)
   if (this.password) {
     this.password = await bcrypt.hash(this.password, 12);
     this.passwordConfirm = undefined;
@@ -166,33 +188,120 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
-// Generate verification token (skip for Google-authenticated users)
+// Generate 6-digit OTP
+userSchema.methods.generateOTP = function() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+// Create email verification OTP
+userSchema.methods.createEmailVerificationOTP = function() {
+  if (this.socialMedia?.googleId) return null;
+  
+  const otp = this.generateOTP();
+  this.emailVerificationOTP = crypto
+    .createHash('sha256')
+    .update(otp)
+    .digest('hex');
+  this.emailVerificationOTPExpires = Date.now() + 15 * 60 * 1000; // 15 minutes
+  this.otpAttempts = 0;
+  this.otpBlockedUntil = undefined;
+  
+  return otp;
+};
+
+// Create password reset OTP
+userSchema.methods.createPasswordResetOTP = function() {
+  const otp = this.generateOTP();
+  this.passwordResetOTP = crypto
+    .createHash('sha256')
+    .update(otp)
+    .digest('hex');
+  this.passwordResetOTPExpires = Date.now() + 15 * 60 * 1000; // 15 minutes
+  
+  return otp;
+};
+
+// Verify email OTP
+userSchema.methods.verifyEmailOTP = function(candidateOTP) {
+  // Check if user is blocked due to too many attempts
+  if (this.otpBlockedUntil && this.otpBlockedUntil > Date.now()) {
+    throw new Error('Too many failed attempts. Please try again later.');
+  }
+
+  // Check if OTP has expired
+  if (this.emailVerificationOTPExpires < Date.now()) {
+    throw new Error('OTP has expired. Please request a new one.');
+  }
+
+  const hashedCandidate = crypto
+    .createHash('sha256')
+    .update(candidateOTP)
+    .digest('hex');
+
+  const isValid = hashedCandidate === this.emailVerificationOTP;
+
+  if (!isValid) {
+    this.otpAttempts += 1;
+    
+    // Block user after 5 failed attempts for 30 minutes
+    if (this.otpAttempts >= 5) {
+      this.otpBlockedUntil = Date.now() + 30 * 60 * 1000; // 30 minutes
+      throw new Error('Too many failed attempts. Account blocked for 30 minutes.');
+    }
+    
+    return false;
+  }
+
+  // Clear OTP fields on successful verification
+  this.emailVerificationOTP = undefined;
+  this.emailVerificationOTPExpires = undefined;
+  this.otpAttempts = 0;
+  this.otpBlockedUntil = undefined;
+  this.isVerified = true;
+
+  return true;
+};
+
+// Verify password reset OTP
+userSchema.methods.verifyPasswordResetOTP = function(candidateOTP) {
+  if (this.passwordResetOTPExpires < Date.now()) {
+    throw new Error('OTP has expired. Please request a new one.');
+  }
+
+  const hashedCandidate = crypto
+    .createHash('sha256')
+    .update(candidateOTP)
+    .digest('hex');
+
+  return hashedCandidate === this.passwordResetOTP;
+};
+
+// Generate verification token (keep for backward compatibility)
 userSchema.methods.createVerificationToken = function() {
-  if (this.socialMedia?.googleId) return null; // Google users are auto-verified
+  if (this.socialMedia?.googleId) return null;
   
   const verificationToken = crypto.randomBytes(32).toString('hex');
   this.verificationToken = crypto
     .createHash('sha256')
     .update(verificationToken)
     .digest('hex');
-  this.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+  this.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000;
   return verificationToken;
 };
 
-// Generate password reset token (works for all users)
+// Generate password reset token
 userSchema.methods.createPasswordResetToken = function() {
   const resetToken = crypto.randomBytes(32).toString('hex');
   this.passwordResetToken = crypto
     .createHash('sha256')
     .update(resetToken)
     .digest('hex');
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };
 
-// Compare password method (modified for Google-authenticated users)
+// Compare password method
 userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
-  // Google-authenticated users don't have passwords
   if (this.socialMedia?.googleId) return false;
   return await bcrypt.compare(candidatePassword, userPassword);
 };
