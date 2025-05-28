@@ -14,55 +14,6 @@ export default function TourDetails({ tours, user, setBookings, addNotification 
     tours.find(t => t._id === window.location.pathname.split('/').pop())
   )
 
-  // const handlePayment = async () => {
-  //   try {
-  //     setBookingState(prev => ({ ...prev, paymentLoading: true }))
-      
-  //     const order = await initPayment({
-  //       tourId: tour._id,
-  //       participants: bookingState.participants,
-  //       userId: user._id
-  //     })
-
-  //     const options = {
-  //       key: import.meta.env.VITE_RAZORPAY_KEY,
-  //       amount: order.amount,
-  //       currency: 'INR',
-  //       name: 'Explorer Travels',
-  //       order_id: order.id,
-  //       handler: async (response) => {
-  //         try {
-  //           const booking = await createBooking({
-  //             ...bookingState,
-  //             tour: tour._id,
-  //             user: user._id,
-  //             paymentId: response.razorpay_payment_id
-  //           }, user.token)
-            
-  //           setBookings(prev => [...prev, booking])
-  //           addNotification('Booking successful!', 'success')
-  //         } catch (error) {
-  //           addNotification(error.response?.data?.message || 'Booking failed', 'error')
-  //         }
-  //       },
-  //       prefill: {
-  //         email: user.email,
-  //         name: user.name
-  //       },
-  //       theme: {
-  //         color: '#3399cc'
-  //       }
-  //     }
-
-  //     const rzp = new window.Razorpay(options)
-  //     rzp.open()
-  //   } catch (error) {
-  //     addNotification(error.message, 'error')
-  //   } finally {
-  //     setBookingState(prev => ({ ...prev, paymentLoading: false }))
-  //   }
-  // }
-
   const handlePayment = async () => {
     try {
       setBookingState(prev => ({ ...prev, paymentLoading: true }));

@@ -33,24 +33,6 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
-// Register User
-// export const register = async (req, res, next) => {
-//   try {
-//     const newUser = await User.create(req.body);
-
-//     if (!newUser.socialMedia?.googleId) {
-//       const otp = newUser.createEmailVerificationOTP();
-//       await newUser.save({ validateBeforeSave: false });
-//       // Send OTP via email here
-//       console.log('Email OTP:', otp);
-//     }
-
-//     createSendToken(newUser, 201, res);
-//   } catch (err) {
-//     next(err);
-//   }
-// };
-
 import { sendOTPEmail } from '../utils/emailService.js';
 
 export const register = async (req, res, next) => {
@@ -77,26 +59,6 @@ export const register = async (req, res, next) => {
   }
 };
 
-// Login User
-// export const login = async (req, res, next) => {
-//   const { email, password } = req.body;
-
-//   if (!email || !password) {
-//     return next(new AppError('Please provide email and password', 400));
-//   }
-
-//   const user = await User.findOne({ email }).select('+password');
-
-//   if (!user || !(await user.correctPassword(password, user.password))) {
-//     return next(new AppError('Incorrect email or password', 401));
-//   }
-
-//   if (!user.isVerified) {
-//     return next(new AppError('Please verify your email first.', 401));
-//   }
-
-//   createSendToken(user, 200, res);
-// };
 export const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -130,26 +92,6 @@ export const login = async (req, res, next) => {
     next(err);
   }
 };
-
-// Google Login
-// export const googleLogin = async (req, res, next) => {
-//   const { googleId, email, googlePhoto } = req.body;
-
-//   let user = await User.findOne({ email });
-
-//   if (!user) {
-//     user = await User.create({
-//       email,
-//       isVerified: true,
-//       socialMedia: { googleId, googlePhoto }
-//     });
-//   }
-
-//   createSendToken(user, 200, res);
-// };
-
-
-
 
 
 export const googleLogin = async (req, res, next) => {
@@ -211,29 +153,6 @@ export const googleLogin = async (req, res, next) => {
     data: { user }
   });
 };
-
-// Verify Email OTP
-// export const verifyEmailOTP = async (req, res, next) => {
-//   const { email, otp } = req.body;
-
-//   const user = await User.findOne({ email }).select('+emailVerificationOTP +emailVerificationOTPExpires +otpAttempts +otpBlockedUntil');
-
-//   if (!user) return next(new AppError('User not found', 404));
-
-//   try {
-//     const success = user.verifyEmailOTP(otp);
-//     await user.save({ validateBeforeSave: false });
-
-//     if (success) {
-//       res.status(200).json({ status: 'success', message: 'Email verified successfully.' });
-//     } else {
-//       return next(new AppError('Invalid OTP', 400));
-//     }
-//   } catch (err) {
-//     return next(new AppError(err.message, 400));
-//   }
-// };
-
 
 export const verifyEmailOTP = async (req, res, next) => {
   try {
@@ -332,31 +251,6 @@ export const forgotPassword = async (req, res, next) => {
 
   res.status(200).json({ status: 'success', message: 'Password reset OTP sent.' });
 };
-
-// Reset Password via OTP
-// export const resetPassword = async (req, res, next) => {
-//   const { email, otp, newPassword } = req.body;
-
-//   const user = await User.findOne({ email }).select('+password +passwordResetOTP +passwordResetOTPExpires');
-
-//   if (!user) return next(new AppError('User not found', 404));
-
-//   try {
-//     const isValid = user.verifyPasswordResetOTP(otp);
-//     if (!isValid) return next(new AppError('Invalid OTP', 400));
-//   } catch (err) {
-//     return next(new AppError(err.message, 400));
-//   }
-
-//   user.password = newPassword;
-//   user.passwordConfirm = newPassword;
-//   user.passwordResetOTP = undefined;
-//   user.passwordResetOTPExpires = undefined;
-
-//   await user.save();
-
-//   createSendToken(user, 200, res);
-// };
 
 // Update Password (Logged In User)
 export const updatePassword = async (req, res, next) => {
@@ -465,14 +359,6 @@ export const updateUser = async (req, res, next) => {
   });
 };
 
-// export const getAllUsers = catchAsync(async (req, res, next) => {
-//   const users = await User.find();
-//   res.status(200).json({
-//     status: 'success',
-//     results: users.length,
-//     data: { users }
-//   });
-// });
 export const getMe = async (req, res, next) => {
   console.log('getMe called, req.user:', req.user); // Debug log
 
