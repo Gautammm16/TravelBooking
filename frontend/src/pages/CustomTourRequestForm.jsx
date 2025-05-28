@@ -25,17 +25,90 @@ const CustomTourRequestForm = () => {
   });
 
   return (
-    <div className="p-4 max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Request a Custom Tour</h2>
-      <form onSubmit={formik.handleSubmit} className="space-y-4">
-        <input type="text" name="destination" placeholder="Destination" onChange={formik.handleChange} className="w-full p-2 border" />
-        <input type="number" name="duration" placeholder="Duration (days)" onChange={formik.handleChange} className="w-full p-2 border" />
-        <input type="text" name="preferredDates" placeholder="Preferred Dates (comma separated)" onChange={e => formik.setFieldValue('preferredDates', e.target.value.split(','))} className="w-full p-2 border" />
-        <input type="number" name="groupSize" placeholder="Group Size" onChange={formik.handleChange} className="w-full p-2 border" />
-        <input type="number" name="budget" placeholder="Budget ($)" onChange={formik.handleChange} className="w-full p-2 border" />
-        <textarea name="preferences" placeholder="Preferences (activities, accommodations...)" onChange={formik.handleChange} className="w-full p-2 border"></textarea>
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Submit Request</button>
-      </form>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-2xl">
+        <h2 className="text-3xl font-semibold text-gray-800 mb-6 text-center">
+          Request a Custom Tour
+        </h2>
+        <form onSubmit={formik.handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Destination</label>
+            <input
+              type="text"
+              name="destination"
+              placeholder="Enter your destination"
+              onChange={formik.handleChange}
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Duration (days)</label>
+            <input
+              type="number"
+              name="duration"
+              placeholder="e.g., 5"
+              onChange={formik.handleChange}
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Dates</label>
+            <input
+              type="text"
+              name="preferredDates"
+              placeholder="e.g., 2025-06-01, 2025-06-15"
+              onChange={(e) =>
+                formik.setFieldValue('preferredDates', e.target.value.split(','))
+              }
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="text-xs text-gray-500 mt-1">Separate multiple dates with commas</p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Group Size</label>
+            <input
+              type="number"
+              name="groupSize"
+              placeholder="e.g., 4"
+              onChange={formik.handleChange}
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Budget ($)</label>
+            <input
+              type="number"
+              name="budget"
+              placeholder="e.g., 2000"
+              onChange={formik.handleChange}
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Preferences</label>
+            <textarea
+              name="preferences"
+              placeholder="Activities, accommodation types, transport preferences..."
+              onChange={formik.handleChange}
+              className="w-full p-3 border rounded-lg resize-none h-28 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            ></textarea>
+          </div>
+
+          <div className="text-center">
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition duration-200"
+            >
+              Submit Request
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };

@@ -267,12 +267,18 @@ export const AuthProvider = ({ children }) => {
 
   const checkAdminAccess = () => user?.role === 'admin';
 
+  // Get token from localStorage or user object
+  const getToken = () => {
+    return user?.token || localStorage.getItem('token');
+  };
+
   const value = {
     user,
     role: user?.role || null,
     loading,
     error,
     otpEmail,
+    token: getToken(), // Add token to context value
     isAdmin: checkAdminAccess(),
     login,
     googleLogin,

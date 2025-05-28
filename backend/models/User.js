@@ -86,6 +86,13 @@ const userSchema = new mongoose.Schema({
       message: 'Date of birth must be in the past'
     }
   },
+   favorites: [
+    {
+      type: mongoose.Schema.ObjectId,
+      ref: 'Tour'
+    }
+  ],
+
   gender: {
     type: String,
     enum: ['male', 'female', 'other', 'prefer-not-to-say']

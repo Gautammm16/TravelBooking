@@ -12,6 +12,7 @@ import paymentRoutes from './routes/paymentRoutes.js';
 import AppError from './utils/appError.js';
 import globalErrorHandler from './middleware/globalErrorHandler.js';
 import customTourRequestRoutes from './routes/CustomTourRoutes.js';
+import favoriteRoutes from './routes/favoriteRoutes.js';
 dotenv.config();
 connectDB();
 
@@ -39,7 +40,9 @@ app.use('/api/v1/tours', tourRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/payments', paymentRoutes);
+app.use('/api/v1/favorites', favoriteRoutes);
 app.use('/api/custom-tour-requests', customTourRequestRoutes);
+
 // Global error handler
 app.use(globalErrorHandler);
 

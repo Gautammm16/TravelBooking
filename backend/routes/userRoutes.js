@@ -17,7 +17,14 @@ import {
   resendEmailOTP
 } from '../controllers/userController.js';
 import { protect, restrictTo } from '../middleware/authMiddleware.js';
+import {
+  addFavorite,
+  removeFavorite,
+  getFavorites
+} from '../controllers/favoriteController.js';
+
 import upload from '../middleware/uploadMiddleware.js';
+import { auth } from 'google-auth-library';
 
 const router = express.Router();
 
@@ -47,5 +54,8 @@ router.use(restrictTo('admin'));
 router.get('/displayall', getAllUsers);
 router.delete('/:id', protect, deleteUser);
 router.get('/admin/stats', getAdminStats);
+
+
+
 
 export default router;

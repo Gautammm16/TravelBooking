@@ -24,6 +24,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import CustomTourRequestForm from './pages/CustomTourRequestForm';
 import UserCustomTours from './pages/UserCustomTour';
 import AdminCustomTourRequests from './pages/Admin/AdminCustomTourRequests';
+import Favorites from './pages/Favorite';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/my-bookings" element={<UserBookings />} />
           <Route path="/verify-otp" element={<VerifyOTP />} />
+          <Route path="/favorites" element={<Favorites />} />
           
           {/* Protected Custom Tour Request Route - Only for logged in users */}
           <Route

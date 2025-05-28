@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Heart, HeartOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext.jsx';
 
 const Display = () => {
   const [allTours, setAllTours] = useState([]);
@@ -13,54 +14,68 @@ const Display = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [imageIndexes, setImageIndexes] = useState({});
+  const [favorites, setFavorites] = useState([]);
 
   const toursPerPage = 8;
   const navigate = useNavigate();
+  const { user, token } = useAuth();
 
   const fetchAllTours = async () => {
     try {
       setLoading(true);
       const res = await axios.get('http://localhost:5000/api/v1/tours?limit=1000');
-      const data = res.data;
-      setAllTours(data.data.tours || []);
-      setLoading(false);
+      const tours = res.data.data?.tours || res.data.tours || [];
+      setAllTours(tours);
     } catch (error) {
       console.error('Error fetching tours:', error);
+      setAllTours([]);
+    } finally {
       setLoading(false);
     }
   };
-
+const fetchFavorites = async () => {
+  if (!token) return setFavorites([]);
+  try {
+    const res = await axios.get('http://localhost:5000/api/v1/favorites', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const favoriteIds = res.data.data.favorites?.map(t => t._id) || [];
+    setFavorites(favoriteIds);
+  } catch (err) {
+    console.error('Error fetching favorites:', err);
+    setFavorites([]);
+  }
+};
   useEffect(() => {
     fetchAllTours();
   }, []);
 
   useEffect(() => {
-    let filtered = allTours;
+    fetchFavorites();
+  }, [user, token]);
 
-    if (search) {
+  useEffect(() => {
+    let filtered = [...allTours];
+    if (search.trim()) {
       filtered = filtered.filter(tour =>
-        tour.name.toLowerCase().includes(search.toLowerCase())
+        tour.name?.toLowerCase().includes(search.toLowerCase().trim())
       );
     }
-
-    if (country) {
+    if (country.trim()) {
       filtered = filtered.filter(tour =>
-        tour.country.toLowerCase() === country.toLowerCase()
+        tour.country?.toLowerCase() === country.toLowerCase().trim()
       );
     }
-
-    if (difficulty) {
+    if (difficulty.trim()) {
       filtered = filtered.filter(tour =>
-        tour.difficulty.toLowerCase() === difficulty.toLowerCase()
+        tour.difficulty?.toLowerCase() === difficulty.toLowerCase().trim()
       );
     }
-
     if (sortOrder === 'asc') {
-      filtered = [...filtered].sort((a, b) => a.price - b.price);
+      filtered.sort((a, b) => (a.price || 0) - (b.price || 0));
     } else if (sortOrder === 'desc') {
-      filtered = [...filtered].sort((a, b) => b.price - a.price);
+      filtered.sort((a, b) => (b.price || 0) - (a.price || 0));
     }
-
     setFilteredTours(filtered);
     setCurrentPage(1);
   }, [search, country, difficulty, sortOrder, allTours]);
@@ -69,6 +84,54 @@ const Display = () => {
   const indexOfLastTour = currentPage * toursPerPage;
   const indexOfFirstTour = indexOfLastTour - toursPerPage;
   const currentTours = filteredTours.slice(indexOfFirstTour, indexOfLastTour);
+
+ const handleFavoriteToggle = async (tourId, e) => {
+  e.stopPropagation();
+  if (!user || !token) return alert('Please log in to favorite tours.');
+
+  try {
+    let res;
+    if (favorites.includes(tourId)) {
+      res = await axios.delete(
+        `http://localhost:5000/api/v1/favorites/${tourId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } else {
+      res = await axios.post(
+        'http://localhost:5000/api/v1/favorites',
+        { tourId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    }
+    const updatedFavorites = res.data.data.favorites?.map(t => t._id) || [];
+    setFavorites(updatedFavorites);
+  } catch (err) {
+    console.error('Error updating favorites:', err);
+    alert('Failed to update favorites. Please try again.');
+  }
+};
+
+
+
+  const handleImageNavigation = (tourId, direction, length, e) => {
+    e.stopPropagation();
+    setImageIndexes(prev => {
+      const currentIndex = prev[tourId] || 0;
+      const newIndex = direction === 'prev'
+        ? (currentIndex - 1 + length) % length
+        : (currentIndex + 1) % length;
+      return { ...prev, [tourId]: newIndex };
+    });
+  };
+
+  const resetFilters = () => {
+    setSearch('');
+    setCountry('');
+    setDifficulty('');
+    setSortOrder('');
+  };
+
+  const uniqueCountries = [...new Set(allTours.map(t => t.country).filter(Boolean))];
 
   return (
     <div className="bg-gray-100 min-h-screen py-10 px-4 md:px-10">
@@ -81,22 +144,22 @@ const Display = () => {
           placeholder="Search tour..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="px-3 py-2 border rounded w-64 focus:ring-2 focus:ring-blue-400"
+          className="px-3 py-2 border rounded w-64 focus:ring-2 focus:ring-blue-400 focus:outline-none"
         />
         <select
           value={country}
           onChange={(e) => setCountry(e.target.value)}
-          className="px-3 py-2 border rounded focus:ring-2 focus:ring-blue-400"
+          className="px-3 py-2 border rounded focus:ring-2 focus:ring-blue-400 focus:outline-none"
         >
           <option value="">All Countries</option>
-          {[...new Set(allTours.map(t => t.country))].map((c, i) => (
+          {uniqueCountries.map((c, i) => (
             <option key={i} value={c}>{c}</option>
           ))}
         </select>
         <select
           value={difficulty}
           onChange={(e) => setDifficulty(e.target.value)}
-          className="px-3 py-2 border rounded focus:ring-2 focus:ring-blue-400"
+          className="px-3 py-2 border rounded focus:ring-2 focus:ring-blue-400 focus:outline-none"
         >
           <option value="">All Difficulties</option>
           <option value="easy">Easy</option>
@@ -106,21 +169,15 @@ const Display = () => {
         <select
           value={sortOrder}
           onChange={(e) => setSortOrder(e.target.value)}
-          className="px-3 py-2 border rounded focus:ring-2 focus:ring-blue-400"
+          className="px-3 py-2 border rounded focus:ring-2 focus:ring-blue-400 focus:outline-none"
         >
           <option value="">Sort by Price</option>
           <option value="asc">Low to High</option>
           <option value="desc">High to Low</option>
         </select>
-
         <button
-          onClick={() => {
-            setSearch('');
-            setCountry('');
-            setDifficulty('');
-            setSortOrder('');
-          }}
-          className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          onClick={resetFilters}
+          className="px-3 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-200"
         >
           Reset Filters
         </button>
@@ -128,101 +185,98 @@ const Display = () => {
 
       {loading ? (
         <div className="flex justify-center py-10">
-          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
         <>
-          {/* Tour Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
             {currentTours.length > 0 ? (
               currentTours.map((tour) => {
-                const images = tour.images && tour.images.length > 0 ? tour.images : [tour.imageCover];
+                const images = Array.isArray(tour.images) && tour.images.length
+                  ? tour.images
+                  : tour.imageCover ? [tour.imageCover] : ['/placeholder-image.jpg'];
+
                 const currentIndex = imageIndexes[tour._id] || 0;
+                const isFavorite = favorites.includes(tour._id);
 
                 return (
                   <div
                     key={tour._id}
                     onClick={() => navigate(`/tour/${tour._id}`)}
-                    className="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                    className="cursor-pointer bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 relative"
                   >
-                    {/* Carousel */}
                     <div className="relative w-full aspect-video bg-gray-200">
                       <img
                         src={images[currentIndex]}
                         alt={tour.name}
-                        className="w-full h-full object-cover transition-all duration-300"
+                        onError={(e) => e.target.src = '/placeholder-image.jpg'}
+                        className="w-full h-full object-cover"
                       />
-                      {/* Left Arrow */}
                       {images.length > 1 && (
                         <>
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setImageIndexes((prev) => ({
-                                ...prev,
-                                [tour._id]: (currentIndex - 1 + images.length) % images.length
-                              }));
-                            }}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-1 hover:bg-opacity-90"
+                            onClick={(e) => handleImageNavigation(tour._id, 'prev', images.length, e)}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-1"
                           >
                             <ChevronLeft className="w-4 h-4 text-gray-800" />
                           </button>
-
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setImageIndexes((prev) => ({
-                                ...prev,
-                                [tour._id]: (currentIndex + 1) % images.length
-                              }));
-                            }}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-1 hover:bg-opacity-90"
+                            onClick={(e) => handleImageNavigation(tour._id, 'next', images.length, e)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-1"
                           >
                             <ChevronRight className="w-4 h-4 text-gray-800" />
                           </button>
+                          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                            {images.map((_, idx) => (
+                              <div key={idx} className={`w-2 h-2 rounded-full ${idx === currentIndex ? 'bg-white' : 'bg-white bg-opacity-50'}`} />
+                            ))}
+                          </div>
                         </>
                       )}
+                      {user && (
+                        <button
+                          onClick={(e) => handleFavoriteToggle(tour._id, e)}
+                          className={`absolute top-3 right-3 p-2 rounded-full ${isFavorite ? 'bg-red-600 text-white' : 'bg-white text-gray-800'}`}
+                        >
+                          {isFavorite ? <Heart className="w-5 h-5 fill-current" /> : <HeartOff className="w-5 h-5" />}
+                        </button>
+                      )}
                     </div>
-
                     <div className="p-4">
-                      <h2 className="text-lg font-semibold text-gray-800 mb-2">{tour.name}</h2>
-                      <p className="text-sm text-gray-600 mb-2">{tour.summary}</p>
-                      <div className="flex justify-between text-sm text-gray-500">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">{tour.name}</h2>
+                      <p className="text-sm text-gray-600 mb-2 line-clamp-2">{tour.summary}</p>
+                      <div className="flex justify-between text-sm text-gray-500 mb-2">
                         <span>📍 {tour.country}</span>
                         <span>⏱ {tour.duration} days</span>
                       </div>
-                      <div className="flex justify-between text-sm text-gray-500 mt-1">
-                        <span>📆 Start Dates: {tour.startDates?.slice(0, 2).join(', ')}</span>
-                      </div>
-                      <div className="flex flex-col mt-1 text-sm text-gray-500">
-                        {tour.locations?.slice(0, 2).map((loc, idx) => (
-                          <span key={idx}>📌 {loc.description}</span>
-                        ))}
-                      </div>
-                      <div className="flex justify-between items-center mt-3">
-                        <span className="font-bold text-green-600">₹{tour.price}</span>
-                        <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">{tour.difficulty}</span>
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-blue-600">${tour.price}</span>
+                        <span className="text-xs capitalize text-gray-500">{tour.difficulty}</span>
                       </div>
                     </div>
                   </div>
                 );
               })
             ) : (
-              <p className="text-center text-gray-600 col-span-full">No tours found.</p>
+              <div className="col-span-full text-center py-10">
+                <p className="text-gray-500 text-lg">No tours found matching your criteria.</p>
+                <button
+                  onClick={resetFilters}
+                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                >
+                  Clear Filters
+                </button>
+              </div>
             )}
           </div>
 
           {/* Pagination */}
-          <div className="flex justify-center items-center flex-wrap gap-2">
+          <div className="flex justify-center gap-2">
             {[...Array(totalPages)].map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentPage(index + 1)}
-                className={`px-3 py-1 border rounded ${
-                  currentPage === index + 1
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-white text-gray-700 hover:bg-blue-100'
-                }`}
+                className={`px-3 py-1 border rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-blue-100'}`}
               >
                 {index + 1}
               </button>
