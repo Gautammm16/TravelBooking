@@ -43,9 +43,9 @@ router.post('/forgot-password', forgotPassword);
 // router.patch('/reset-password', resetPassword);
 
 // Protected routes (require authentication)
+router.get('/me',protect, getMe);
 router.use(protect); // All routes after this middleware are protected
 
-router.get('/me', getMe);
 router.patch('/update-me/:id', upload.single('avatar'), updateUser);
 
 // Admin only routes
