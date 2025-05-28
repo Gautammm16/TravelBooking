@@ -1,77 +1,219 @@
-import { useState, useEffect } from 'react'
-import { updateUser, changePassword } from '../services/api'
-import Loader from '../components/Loader'
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
+import { ThreeDots } from 'react-loader-spinner';
 
-export default function Profile({ user, setUser }) {
-  const [profileData, setProfileData] = useState({
-    name: user.name,
-    email: user.email,
-    photo: user.photo
-  })
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  })
-  const [activeTab, setActiveTab] = useState('profile')
-  const [loading, setLoading] = useState(false)
+const UserProfile = () => {
+  const { user: authUser } = useAuth();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const handleProfileUpdate = async (e) => {
-    e.preventDefault()
-    try {
-      setLoading(true)
-      const updatedUser = await updateUser(user._id, profileData, user.token)
-      setUser(updatedUser)
-      // ... show success notification
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const { data } = await api.get('/v1/users/me');
+        setUser(data.data.user);
+      } catch (err) {
+        setError('Failed to load profile data');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (authUser) {
+      fetchUserData();
     }
+  }, [authUser]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'Not specified';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <ThreeDots color="#3b82f6" height={80} width={80} />
+      </div>
+    );
   }
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault()
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      // ... show error
-      return
-    }
-    try {
-      setLoading(true)
-      await changePassword(user._id, passwordData, user.token)
-      // ... show success and clear form
-    } finally {
-      setLoading(false)
-    }
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-red-500 text-lg">{error}</p>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex gap-4 mb-8">
-        <button onClick={() => setActiveTab('profile')}>Profile</button>
-        <button onClick={() => setActiveTab('password')}>Password</button>
-      </div>
-
-      {activeTab === 'profile' ? (
-        <form onSubmit={handleProfileUpdate} className="max-w-md space-y-4">
-          <div>
-            <label>Name</label>
-            <input
-              value={profileData.name}
-              onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-            />
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto">
+        <div className="bg-white shadow rounded-lg overflow-hidden">
+          {/* Profile Header */}
+          <div className="bg-blue-600 px-6 py-8 text-white">
+            <div className="flex items-center space-x-4">
+              <img
+                src={user.avatar}
+                alt="Profile"
+                className="h-20 w-20 rounded-full border-4 border-white"
+              />
+              <div>
+                <h1 className="text-2xl font-bold">
+                  {user.firstName} {user.lastName}
+                </h1>
+                <p className="text-blue-100">{user.email}</p>
+                {user.role === 'admin' && (
+                  <span className="inline-block mt-1 px-2 py-1 text-xs font-semibold bg-blue-800 rounded-full">
+                    Admin
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-          {/* Add photo upload input */}
-          <button disabled={loading}>
-            {loading ? <Loader /> : 'Update Profile'}
-          </button>
-        </form>
-      ) : (
-        <form onSubmit={handlePasswordChange} className="max-w-md space-y-4">
-          {/* Password fields */}
-          <button disabled={loading}>
-            {loading ? <Loader /> : 'Change Password'}
-          </button>
-        </form>
-      )}
+
+          {/* Profile Details */}
+          <div className="px-6 py-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Personal Information */}
+              <div className="space-y-4">
+                <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">
+                  Personal Information
+                </h2>
+                <div>
+                  <p className="text-sm text-gray-500">First Name</p>
+                  <p className="text-gray-800">{user.firstName || 'Not specified'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Last Name</p>
+                  <p className="text-gray-800">{user.lastName || 'Not specified'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Date of Birth</p>
+                  <p className="text-gray-800">{formatDate(user.dob)}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Gender</p>
+                  <p className="text-gray-800">
+                    {user.gender ? 
+                      user.gender.charAt(0).toUpperCase() + user.gender.slice(1) : 
+                      'Not specified'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Contact Information */}
+              <div className="space-y-4">
+                <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">
+                  Contact Information
+                </h2>
+                <div>
+                  <p className="text-sm text-gray-500">Email</p>
+                  <p className="text-gray-800">{user.email}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Phone Number</p>
+                  <p className="text-gray-800">{user.phoneNumber || 'Not specified'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Account Status</p>
+                  <p className="text-gray-800">
+                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      user.isVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      {user.isVerified ? 'Verified' : 'Unverified'}
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Address */}
+              {user.address && (
+                <div className="space-y-4">
+                  <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">
+                    Address
+                  </h2>
+                  <div>
+                    <p className="text-sm text-gray-500">Street</p>
+                    <p className="text-gray-800">{user.address.street || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">City</p>
+                    <p className="text-gray-800">{user.address.city || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">State</p>
+                    <p className="text-gray-800">{user.address.state || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Country</p>
+                    <p className="text-gray-800">{user.address.country || 'Not specified'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">ZIP Code</p>
+                    <p className="text-gray-800">{user.address.zipCode || 'Not specified'}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Preferences */}
+              {user.preferences && (
+                <div className="space-y-4">
+                  <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">
+                    Preferences
+                  </h2>
+                  <div>
+                    <p className="text-sm text-gray-500">Language</p>
+                    <p className="text-gray-800">
+                      {user.preferences.preferredLanguage || 'English (default)'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Currency</p>
+                    <p className="text-gray-800">
+                      {user.preferences.currency || 'USD (default)'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Newsletter</p>
+                    <p className="text-gray-800">
+                      {user.preferences.newsletter ? 'Subscribed' : 'Not subscribed'}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Social Media */}
+            {user.socialMedia && (
+              <div className="mt-6 space-y-4">
+                <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">
+                  Social Media
+                </h2>
+                <p className="text-sm text-gray-500">
+                  {user.socialMedia.googleId ? 'Connected with Google' : 'Not connected to Google'}
+                </p>
+         
+              </div>
+            )}
+
+            {/* Account Created */}
+            <div className="mt-6">
+              <p className="text-sm text-gray-500">Member since</p>
+              <p className="text-gray-800">{formatDate(user.createdAt)}</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
+
+export default UserProfile;

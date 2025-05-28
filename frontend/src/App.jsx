@@ -18,26 +18,59 @@ import Gallery from './pages/Gallery';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import UserBookings from './pages/UserBookings';
+import VerifyOTP from './pages/VerifyOTP';
+import UserProfile from './pages/Profile';
+import ProtectedRoute from './components/ProtectedRoute';
+import CustomTourRequestForm from './pages/CustomTourRequestForm';
+import UserCustomTours from './pages/UserCustomTour';
+import AdminCustomTourRequests from './pages/Admin/AdminCustomTourRequests';
 
 function App() {
   return (
-    
     <AuthProvider>
       <Router>
-        {/* Header will be displayed on all pages */}
         <Header />
-
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Display />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/tour/:id" element={<ViewDetailedTour />} />
-          <Route path = "/forget-password" element = {<Forgetpassword/>} />
-          <Route path="/gallery" element={<Gallery/>} />
-          <Route path="/about" element={<About/>} />
-          <Route path="/contact" element={<Contact/>} />
-          <Route path="/my-bookings" element={<UserBookings/>} />
+          <Route path="/forget-password" element={<Forgetpassword />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/my-bookings" element={<UserBookings />} />
+          <Route path="/verify-otp" element={<VerifyOTP />} />
+          
+          {/* Protected Custom Tour Request Route - Only for logged in users */}
+          <Route
+            path="/custom-tour-request"
+            element={
+              <ProtectedRoute>
+                <CustomTourRequestForm />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Protected Profile Route */}
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <UserProfile />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route 
+            path="/my-custom-tours" 
+            element={
+              <ProtectedRoute>
+                <UserCustomTours />
+              </ProtectedRoute>
+            } 
+          />
 
           {/* Protected Admin Routes */}
           <Route path="/admin" element={<AdminRoute />}>
@@ -46,13 +79,14 @@ function App() {
             <Route path="manage-tours" element={<AdminManageTours />} />
             <Route path="manage-users" element={<AdminManageUsers />} />
             <Route path="manage-bookings" element={<AdminManageBookings />} />
+            <Route path="custom-tour-requests" element={<AdminCustomTourRequests />} />
             <Route path="update-tour/:id" element={<AdminUpdateTour />} />
           </Route>
 
           {/* 404 */}
           <Route path="*" element={<h1>404 - Page Not Found</h1>} />
         </Routes>
-        <Footer/>
+        <Footer />
       </Router>
     </AuthProvider>
   );

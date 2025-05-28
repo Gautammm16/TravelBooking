@@ -11,20 +11,13 @@ import bookingRoutes from './routes/bookingRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import AppError from './utils/appError.js';
 import globalErrorHandler from './middleware/globalErrorHandler.js';
-
+import customTourRequestRoutes from './routes/CustomTourRoutes.js';
 dotenv.config();
 connectDB();
 
 const app = express();
 
-// Middleware
 
-
-// app.use(cors({
-//   origin: 'http://localhost:5173', // frontend origin
-//   credentials: true  
-// }
-// ));
 
 app.use(cors({
   origin: ['http://localhost:5173'],
@@ -46,8 +39,7 @@ app.use('/api/v1/tours', tourRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/payments', paymentRoutes);
-
-
+app.use('/api/custom-tour-requests', customTourRequestRoutes);
 // Global error handler
 app.use(globalErrorHandler);
 

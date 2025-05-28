@@ -30,6 +30,7 @@
     "react-loader-spinner": "^6.1.6",
     "react-router-dom": "^7.6.0",
     "react-spinners": "^0.17.0",
+    "react-toastify": "^11.0.5",
     "recharts": "^2.15.3",
     "yup": "^1.6.1"
   },

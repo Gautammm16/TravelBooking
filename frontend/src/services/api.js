@@ -146,4 +146,9 @@ export const resetPassword = async (token, password) => {
   const response = await API.patch(`/api/v1/users/resetPassword/${token}`, { password, passwordConfirm: password });
   return response.data;
 };
+
+export const deleteUser = async (userId) => {
+  const response = await API.delete(`/v1/users/${userId}`);
+  return response.data;
+};
 export default API;
