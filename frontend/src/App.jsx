@@ -25,7 +25,7 @@ import CustomTourRequestForm from './pages/CustomTourRequestForm';
 import UserCustomTours from './pages/UserCustomTour';
 import AdminCustomTourRequests from './pages/Admin/AdminCustomTourRequests';
 import Favorites from './pages/Favorite';
-
+import Payment from './pages/Payment';
 function App() {
   return (
     <AuthProvider>
@@ -73,6 +73,7 @@ function App() {
               </ProtectedRoute>
             } 
           />
+                  <Route path="/payment" element={<Payment />} />
 
           {/* Protected Admin Routes */}
           <Route path="/admin" element={<AdminRoute />}>

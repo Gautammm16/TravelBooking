@@ -14,9 +14,9 @@ const router = express.Router();
 router.use(protect);
 
 // Specific routes first
-router.post('/create-order', createOrder);
-router.post('/verify-payment', verifyPayment);
-router.get('/user/:userId', getPaymentsByUser);
+router.post('/create-order',protect, createOrder);
+router.post('/verify-payment',protect, verifyPayment);
+router.get('/user/:userId',protect, getPaymentsByUser);
 router.get('/all', restrictTo('admin'), getAllPayments);
 
 // Generic routes last
