@@ -42,8 +42,8 @@ router.post('/reset-password', resetPasswordWithOTP);
 router.patch('/update-password', protect, updatePassword);
 
 // Protected routes (require authentication)
-router.get('/me',protect, getMe);
 router.use(protect); // All routes after this middleware are protected
+router.get('/me',protect, getMe);
 
 router.patch('/update-me/:id', upload.single('avatar'), updateUser);
 

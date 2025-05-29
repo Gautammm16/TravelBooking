@@ -516,17 +516,65 @@ export const updateUser = async (req, res, next) => {
   });
 };
 
+// export const getMe = async (req, res, next) => {
+//   console.log('getMe called, req.user:', req.user); // Debug log
+
+//   // Sanity check: Make sure protect middleware set req.user
+//   if (!req.user || !req.user.id) {
+//     console.log('No user found in request'); // Debug log
+//     return next(new AppError('You are not logged in.', 401));
+//   }
+
+//   try {
+//     // Fetch user excluding sensitive fields
+//     const user = await User.findById(req.user.id)
+//       .select('-password -passwordConfirm -__v -emailVerificationOTP -emailVerificationOTPExpires -otpAttempts -otpBlockedUntil -passwordResetOTP -passwordResetOTPExpires -verificationToken -verificationTokenExpires -passwordResetToken -passwordResetExpires')
+//       .populate({
+//         path: 'bookings',
+//         select: 'tour status createdAt totalAmount',
+//         populate: {
+//           path: 'tour',
+//           select: 'name price duration images'
+//         }
+//       })
+//       .populate({
+//         path: 'wishlist',
+//         select: 'name price duration images rating'
+//       });
+
+//     if (!user) {
+//       console.log('User not found in database'); // Debug log
+//       return next(new AppError('User not found', 404));
+//     }
+
+//     console.log('User found:', user.email); // Debug log
+
+//     // Success response
+//     res.status(200).json({
+//       status: 'success',
+//       data: { user }
+//     });
+//   } catch (err) {
+//     console.error('Error in getMe controller:', err);
+//     return next(new AppError('Error fetching user data', 500));
+//   }
+// };
+
+
+
 export const getMe = async (req, res, next) => {
-  console.log('getMe called, req.user:', req.user); // Debug log
-
-  // Sanity check: Make sure protect middleware set req.user
-  if (!req.user || !req.user.id) {
-    console.log('No user found in request'); // Debug log
-    return next(new AppError('You are not logged in.', 401));
-  }
-
   try {
-    // Fetch user excluding sensitive fields
+    // Debug logging
+    console.log('getMe called, user ID:', req.user?.id);
+    
+    if (!req.user?.id) {
+      console.warn('Unauthorized access attempt - no user in request');
+      return res.status(401).json({
+        status: 'fail',
+        message: 'You are not logged in. Please authenticate.'
+      });
+    }
+
     const user = await User.findById(req.user.id)
       .select('-password -passwordConfirm -__v -emailVerificationOTP -emailVerificationOTPExpires -otpAttempts -otpBlockedUntil -passwordResetOTP -passwordResetOTPExpires -verificationToken -verificationTokenExpires -passwordResetToken -passwordResetExpires')
       .populate({
@@ -540,22 +588,30 @@ export const getMe = async (req, res, next) => {
       .populate({
         path: 'wishlist',
         select: 'name price duration images rating'
-      });
+      })
+      .lean(); // Convert to plain JavaScript object
 
     if (!user) {
-      console.log('User not found in database'); // Debug log
-      return next(new AppError('User not found', 404));
+      console.error(`User not found with ID: ${req.user.id}`);
+      return res.status(404).json({
+        status: 'fail',
+        message: 'User not found'
+      });
     }
 
-    console.log('User found:', user.email); // Debug log
+    console.log(`Successfully fetched user: ${user.email}`);
 
-    // Success response
     res.status(200).json({
       status: 'success',
       data: { user }
     });
-  } catch (err) {
-    console.error('Error in getMe controller:', err);
-    return next(new AppError('Error fetching user data', 500));
+
+  } catch (error) {
+    console.error('Error in getMe controller:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'An error occurred while fetching user data',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };

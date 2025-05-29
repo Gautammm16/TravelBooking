@@ -1,10 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
+import { getMe } from '../services/api';
 import { ThreeDots } from 'react-loader-spinner';
 
 const UserProfile = () => {
-  const { user: authUser } = useAuth();
+  const { user: authUser, logout } = useAuth();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -12,11 +13,29 @@ const UserProfile = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await api.get('/v1/users/me');
-        setUser(res.data.data.user);
+        const response = await getMe();
+        if (response.status === 'success') {
+          setUser(response.data.user);
+          setError('');
+        } else {
+          setError(response.message || 'Failed to load profile data');
+        }
       } catch (err) {
-        console.error(err);
-        setError('Failed to load profile data');
+        console.error('Profile fetch error:', err);
+        if (err.response) {
+          if (err.response.status === 401) {
+            setError('Session expired. Please log in again.');
+            logout(); // Optional: automatically log out user
+          } else if (err.response.data?.message) {
+            setError(err.response.data.message);
+          } else {
+            setError('Failed to load profile data');
+          }
+        } else if (err.request) {
+          setError('Network error. Please check your connection.');
+        } else {
+          setError('An unexpected error occurred');
+        }
       } finally {
         setLoading(false);
       }
@@ -28,7 +47,7 @@ const UserProfile = () => {
       setLoading(false);
       setError('You are not logged in.');
     }
-  }, [authUser]);
+  }, [authUser, logout]);
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Not specified';
@@ -51,7 +70,17 @@ const UserProfile = () => {
   if (error || !user) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-red-500 text-lg">{error || 'No user data available.'}</p>
+        <div className="text-center">
+          <p className="text-red-500 text-lg mb-4">{error || 'No user data available.'}</p>
+          {error.includes('Session expired') && (
+            <button
+              onClick={() => window.location.href = '/login'}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Go to Login
+            </button>
+          )}
+        </div>
       </div>
     );
   }

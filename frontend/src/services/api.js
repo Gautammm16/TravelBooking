@@ -38,7 +38,7 @@ export const register = async (userData) => {
 
 export const logout = async () => {
   const response = await API.post('/v1/users/logout');
-  return response.data;
+  return response.data; 
 };
 
 // === Forgot/Reset Password (Public Routes) ===
@@ -46,6 +46,13 @@ export const forgotPassword = async (email) => {
   const response = await publicAPI.post('/v1/users/forgot-password', { email });
   return response.data;
 };
+
+
+export const getMe = async () => {
+  const response = await API.get('/v1/users/me');
+  return response.data;
+};
+
 
 export const verifyResetOTP = async (data) => {
   const response = await publicAPI.post('/v1/users/verify-reset-otp', {
