@@ -45,32 +45,6 @@ const VerifyOTP = () => {
   }
 };
 
-// const handleResendOTP = async () => {
-//   if (countdown > 0) return;
-  
-//   setLoading(true);
-//   setError('');
-//   setMessage('');
-
-//   try {
-//     const response = await resendOTP({ email });
-    
-//     if (response.success) {
-//       setMessage(response.message || 'New OTP sent to your email!');
-//       setCountdown(60); // Start 60-second countdown
-//       // Update email in case it changed (shouldn't happen but good practice)
-//       if (response.email) setOtpEmail(response.email);
-//     }
-//   } catch (err) {
-//     setError(err.message);
-//     // Handle specific error cases
-//     if (err.message.includes('already verified')) {
-//       navigate('/login');
-//     }
-//   } finally {
-//     setLoading(false);
-//   }
-// };
 
 const handleResendOTP = async () => {
   if (countdown > 0) return;

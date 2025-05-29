@@ -47,7 +47,7 @@ const Footer = () => {
 
         <div className="flex flex-col md:flex-row items-center justify-between border-t border-gray-200 dark:border-gray-700 py-6">
           <span className="text-sm text-gray-500 dark:text-gray-300 text-center md:text-left">
-            © 2025 <a href="#" className="hover:underline">Price</a>. All Rights Reserved.
+            © 2025 <a href="#" className="hover:underline">Tour Agency</a>. All Rights Reserved.
           </span>
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a href="#" className="text-gray-400 hover:text-gray-900 dark:hover:text-white">

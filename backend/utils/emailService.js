@@ -31,3 +31,18 @@ export const sendOTPEmail = async (email, otp) => {
     throw new Error('Failed to send OTP email');
   }
 };
+
+export const sendEmail = async ({ email, subject, html }) => {
+  try {
+    await transporter.sendMail({
+      from: `"Your App Name" <${process.env.EMAIL_FROM}>`,
+      to: email,
+      subject,
+      html,
+    });
+    console.log(`Notification sent to ${email}`);
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw new Error('Failed to send email');
+  }
+};

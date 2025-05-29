@@ -144,35 +144,6 @@ export const getTourStats = async (req, res) => {
 };
 
 
-
-// ===========================
-// Get All Tours
-// ===========================
-// export const getAllTours = async (req, res) => {
-//   try {
-//     const features = new APIFeatures(Tour.find(), req.query)
-//       .filter()
-//       .sort()
-//       .limitFields()
-//       .paginate();
-
-//     const tours = await features.query;
-
-//     res.status(200).json({
-//       status: 'success',
-//       results: tours.length,
-//       data: {
-//         tours
-//       }
-//     });
-//   } catch (err) {
-//     res.status(400).json({
-//       status: 'fail',
-//       message: err.message
-//     });
-//   }
-// };
-
 export const getAllTours = async (req, res) => {
   try {
     const features = new APIFeatures(Tour.find(), req.query)

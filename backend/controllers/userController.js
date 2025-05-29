@@ -3,6 +3,7 @@ import AppError from '../utils/appError.js';
 import jwt from 'jsonwebtoken';
 import cloudinary from '../utils/cloudinary.js';
 import { OAuth2Client } from 'google-auth-library';
+import { sendEmail } from '../utils/emailService.js';
 
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -235,37 +236,193 @@ export const resendEmailOTP = async (req, res, next) => {
     return next(new AppError('Failed to resend OTP. Please try again.', 500));
   }
 };
-// Forgot Password (OTP)
+
+// 1. Send OTP to email
 export const forgotPassword = async (req, res, next) => {
-  const { email } = req.body;
+  try {
+    const { email } = req.body;
 
-  const user = await User.findOne({ email });
+    if (!email) {
+      return next(new AppError('Please provide your email address', 400));
+    }
 
-  if (!user) return next(new AppError('User not found', 404));
+    const user = await User.findOne({ email });
 
-  const otp = user.createPasswordResetOTP();
-  await user.save({ validateBeforeSave: false });
+    if (!user) {
+      // Security: don't reveal if user exists
+      return res.status(200).json({
+        status: 'success',
+        message: 'If an account exists with this email, an OTP has been sent',
+      });
+    }
 
-  // Send OTP via email
-  console.log('Password reset OTP:', otp);
+    // Check if user is blocked from OTP attempts
+    if (user.otpBlockedUntil && user.otpBlockedUntil > Date.now()) {
+      const timeLeft = Math.ceil((user.otpBlockedUntil - Date.now()) / (60 * 1000));
+      return next(new AppError(`Too many attempts. Please try again in ${timeLeft} minutes`, 429));
+    }
 
-  res.status(200).json({ status: 'success', message: 'Password reset OTP sent.' });
+    // Check for recent OTP request
+    if (user.passwordResetOTPExpires && user.passwordResetOTPExpires > Date.now()) {
+      const timeLeft = Math.ceil((user.passwordResetOTPExpires - Date.now()) / (60 * 1000));
+      return next(new AppError(`Please wait ${timeLeft} minutes before requesting a new OTP`, 429));
+    }
+
+    const otp = user.createPasswordResetOTP();
+    await user.save({ validateBeforeSave: false });
+
+    try {
+      await sendOTPEmail(user.email, otp);
+
+      res.status(200).json({
+        status: 'success',
+        message: 'Password reset OTP sent to your email address',
+      });
+    } catch (err) {
+      user.clearPasswordResetOTP();
+      await user.save({ validateBeforeSave: false });
+      
+      console.error('Email sending failed:', err);
+      return next(new AppError('Failed to send OTP. Please try again later.', 500));
+    }
+  } catch (err) {
+    next(err);
+  }
 };
 
-// Update Password (Logged In User)
+// 2. Verify password reset OTP
+export const verifyResetOTP = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return next(new AppError('Please provide both email and OTP', 400));
+    }
+
+    const user = await User.findOne({ email })
+      .select('+passwordResetOTP +passwordResetOTPExpires +otpAttempts +otpBlockedUntil');
+
+    if (!user) {
+      return next(new AppError('Invalid OTP', 400));
+    }
+
+    // Check if user is blocked from OTP attempts
+    if (user.otpBlockedUntil && user.otpBlockedUntil > Date.now()) {
+      const timeLeft = Math.ceil((user.otpBlockedUntil - Date.now()) / (60 * 1000));
+      return next(new AppError(`Too many attempts. Please try again in ${timeLeft} minutes`, 429));
+    }
+
+    try {
+      const isValid = user.verifyPasswordResetOTP(otp);
+      if (!isValid) {
+        user.otpAttempts += 1;
+        
+        if (user.otpAttempts >= 5) {
+          user.otpBlockedUntil = Date.now() + 30 * 60 * 1000;
+          await user.save({ validateBeforeSave: false });
+          return next(new AppError('Too many failed attempts. Account blocked for 30 minutes.', 429));
+        }
+        
+        await user.save({ validateBeforeSave: false });
+        return next(new AppError('Invalid OTP', 400));
+      }
+
+      // Clear OTP fields
+      user.clearPasswordResetOTP();
+      user.otpAttempts = 0;
+      user.otpBlockedUntil = undefined;
+      await user.save({ validateBeforeSave: false });
+
+      const resetToken = jwt.sign(
+        { id: user._id, purpose: 'password_reset' },
+        process.env.JWT_SECRET,
+        { expiresIn: '15m' }
+      );
+
+      res.status(200).json({
+        status: 'success',
+        message: 'OTP verified successfully',
+        resetToken,
+      });
+    } catch (err) {
+      return next(new AppError(err.message, 400));
+    }
+  } catch (err) {
+    next(err);
+  }
+};
+
+// 3. Reset password using verified OTP
+export const resetPasswordWithOTP = async (req, res, next) => {
+  try {
+    const { resetToken, newPassword, passwordConfirm } = req.body;
+
+    if (!resetToken || !newPassword || !passwordConfirm) {
+      return next(new AppError('Please provide all required fields', 400));
+    }
+
+    if (newPassword !== passwordConfirm) {
+      return next(new AppError('Passwords do not match', 400));
+    }
+
+    // Verify the reset token
+    let decoded;
+    try {
+      decoded = jwt.verify(resetToken, process.env.JWT_SECRET);
+      if (decoded.purpose !== 'password_reset') {
+        throw new Error('Invalid token purpose');
+      }
+    } catch (err) {
+      return next(new AppError('Invalid or expired token', 401));
+    }
+
+    const user = await User.findById(decoded.id).select('+password');
+
+    if (!user) {
+      return next(new AppError('User not found', 404));
+    }
+
+    user.password = newPassword;
+    user.passwordConfirm = passwordConfirm;
+    user.passwordResetOTP = undefined;
+    user.passwordResetOTPExpires = undefined;
+    user.otpAttempts = 0;
+    user.otpBlockedUntil = undefined;
+
+    await user.save();
+
+    // Send password changed notification
+    await sendEmail({
+      email: user.email,
+      subject: 'Password Changed Successfully',
+      html: `<p>Your password was successfully changed.</p>`
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Password has been reset successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Update password for logged-in users
 export const updatePassword = async (req, res, next) => {
+  // 1) Get user from collection
   const user = await User.findById(req.user.id).select('+password');
 
-  const { currentPassword, newPassword } = req.body;
-
-  if (!(await user.correctPassword(currentPassword, user.password))) {
-    return next(new AppError('Current password is incorrect', 401));
+  // 2) Check if POSTed current password is correct
+  if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
+    return next(new AppError('Your current password is incorrect', 401));
   }
 
-  user.password = newPassword;
-  user.passwordConfirm = newPassword;
+  // 3) If so, update password
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
   await user.save();
 
+  // 4) Log user in, send JWT
   createSendToken(user, 200, res);
 };
 

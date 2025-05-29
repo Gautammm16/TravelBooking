@@ -1,5 +1,3 @@
-
-
 import express from 'express';
 import {
   register,
@@ -7,8 +5,9 @@ import {
   googleLogin,
   verifyEmailOTP,
   forgotPassword,
-  // verifyPasswordResetOTP,
-  // resetPassword,
+verifyResetOTP,
+  resetPasswordWithOTP,
+  updatePassword,
   getAllUsers,
   updateUser,
   deleteUser,
@@ -37,10 +36,10 @@ router.post('/google-login', googleLogin);
 router.post('/verifyEmailOTP', verifyEmailOTP);
 router.post('/resend-verification', resendEmailOTP);
 
-// Password reset routes
 router.post('/forgot-password', forgotPassword);
-// router.post('/verify-reset-otp', resetPassword);
-// router.patch('/reset-password', resetPassword);
+router.post('/verify-reset-otp', verifyResetOTP);
+router.post('/reset-password', resetPasswordWithOTP);
+router.patch('/update-password', protect, updatePassword);
 
 // Protected routes (require authentication)
 router.get('/me',protect, getMe);
