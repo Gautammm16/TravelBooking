@@ -58,12 +58,17 @@ export const createBooking = catchAsync(async (req, res, next) => {
 
 // Admin Only: Get all bookings
 export const getAllBookings = catchAsync(async (req, res, next) => {
+  const limit = parseInt(req.query.limit) || 0; // 0 = no limit
+  const sort = req.query.sort || '-createdAt';
+
   const bookings = await Booking.find()
     .populate('user')
     .populate({
       path: 'tour',
       select: 'name price duration imageCover'
-    });
+    })
+    .sort(sort)
+    .limit(limit);
 
   res.status(200).json({
     status: 'success',
@@ -73,6 +78,7 @@ export const getAllBookings = catchAsync(async (req, res, next) => {
     }
   });
 });
+
 
 export const getBookingsCount = async (req, res, next) => {
   const count = await Booking.countDocuments();
