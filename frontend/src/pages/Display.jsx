@@ -13,6 +13,7 @@ const Display = () => {
   const [sortOrder, setSortOrder] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
   const [imageIndexes, setImageIndexes] = useState({});
   const [favorites, setFavorites] = useState([]);
 
@@ -33,27 +34,55 @@ const Display = () => {
       setLoading(false);
     }
   };
-const fetchFavorites = async () => {
-  if (!token) return setFavorites([]);
-  try {
-    const res = await axios.get('http://localhost:5000/api/v1/favorites', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const favoriteIds = res.data.data.favorites?.map(t => t._id) || [];
-    setFavorites(favoriteIds);
-  } catch (err) {
-    console.error('Error fetching favorites:', err);
-    setFavorites([]);
-  }
-};
+
+  const fetchFavorites = async () => {
+    if (!token || !user) {
+      setFavorites([]);
+      return;
+    }
+    
+    try {
+      setFavoritesLoading(true);
+      const res = await axios.get('http://localhost:5000/api/v1/favorites', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      // Handle different response structures
+      let favoriteIds = [];
+      if (res.data.data?.favorites) {
+        favoriteIds = res.data.data.favorites.map(fav => 
+          typeof fav === 'string' ? fav : fav._id || fav.tourId
+        );
+      } else if (res.data.favorites) {
+        favoriteIds = res.data.favorites.map(fav => 
+          typeof fav === 'string' ? fav : fav._id || fav.tourId
+        );
+      }
+      
+      setFavorites(favoriteIds);
+    } catch (err) {
+      console.error('Error fetching favorites:', err);
+      setFavorites([]);
+    } finally {
+      setFavoritesLoading(false);
+    }
+  };
+
+  // Fetch tours on component mount
   useEffect(() => {
     fetchAllTours();
   }, []);
 
+  // Fetch favorites when user or token changes
   useEffect(() => {
-    fetchFavorites();
+    if (user && token) {
+      fetchFavorites();
+    } else {
+      setFavorites([]);
+    }
   }, [user, token]);
 
+  // Filter and sort tours
   useEffect(() => {
     let filtered = [...allTours];
     if (search.trim()) {
@@ -85,33 +114,63 @@ const fetchFavorites = async () => {
   const indexOfFirstTour = indexOfLastTour - toursPerPage;
   const currentTours = filteredTours.slice(indexOfFirstTour, indexOfLastTour);
 
- const handleFavoriteToggle = async (tourId, e) => {
-  e.stopPropagation();
-  if (!user || !token) return alert('Please log in to favorite tours.');
-
-  try {
-    let res;
-    if (favorites.includes(tourId)) {
-      res = await axios.delete(
-        `http://localhost:5000/api/v1/favorites/${tourId}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-    } else {
-      res = await axios.post(
-        'http://localhost:5000/api/v1/favorites',
-        { tourId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+  const handleFavoriteToggle = async (tourId, e) => {
+    e.stopPropagation();
+    if (!user || !token) {
+      alert('Please log in to favorite tours.');
+      return;
     }
-    const updatedFavorites = res.data.data.favorites?.map(t => t._id) || [];
-    setFavorites(updatedFavorites);
-  } catch (err) {
-    console.error('Error updating favorites:', err);
-    alert('Failed to update favorites. Please try again.');
-  }
-};
 
+    const wasAlreadyFavorite = favorites.includes(tourId);
 
+    try {
+      // Optimistically update the UI
+      if (wasAlreadyFavorite) {
+        setFavorites(prev => prev.filter(id => id !== tourId));
+      } else {
+        setFavorites(prev => [...prev, tourId]);
+      }
+
+      let res;
+      if (wasAlreadyFavorite) {
+        res = await axios.delete(
+          `http://localhost:5000/api/v1/favorites/${tourId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        res = await axios.post(
+          'http://localhost:5000/api/v1/favorites',
+          { tourId },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
+
+      // Update favorites from server response to ensure consistency
+      let updatedFavorites = [];
+      if (res.data.data?.favorites) {
+        updatedFavorites = res.data.data.favorites.map(fav => 
+          typeof fav === 'string' ? fav : fav._id || fav.tourId
+        );
+      } else if (res.data.favorites) {
+        updatedFavorites = res.data.favorites.map(fav => 
+          typeof fav === 'string' ? fav : fav._id || fav.tourId
+        );
+      }
+      
+      setFavorites(updatedFavorites);
+    } catch (err) {
+      console.error('Error updating favorites:', err);
+      
+      // Revert optimistic update on error
+      if (wasAlreadyFavorite) {
+        setFavorites(prev => [...prev, tourId]);
+      } else {
+        setFavorites(prev => prev.filter(id => id !== tourId));
+      }
+      
+      alert('Failed to update favorites. Please try again.');
+    }
+  };
 
   const handleImageNavigation = (tourId, direction, length, e) => {
     e.stopPropagation();
@@ -216,13 +275,13 @@ const fetchFavorites = async () => {
                         <>
                           <button
                             onClick={(e) => handleImageNavigation(tour._id, 'prev', images.length, e)}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-1"
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-1 hover:bg-opacity-90 transition-all"
                           >
                             <ChevronLeft className="w-4 h-4 text-gray-800" />
                           </button>
                           <button
                             onClick={(e) => handleImageNavigation(tour._id, 'next', images.length, e)}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-1"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-1 hover:bg-opacity-90 transition-all"
                           >
                             <ChevronRight className="w-4 h-4 text-gray-800" />
                           </button>
@@ -236,9 +295,18 @@ const fetchFavorites = async () => {
                       {user && (
                         <button
                           onClick={(e) => handleFavoriteToggle(tour._id, e)}
-                          className={`absolute top-3 right-3 p-2 rounded-full ${isFavorite ? 'bg-red-600 text-white' : 'bg-white text-gray-800'}`}
+                          disabled={favoritesLoading}
+                          className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-200 ${
+                            isFavorite 
+                              ? 'bg-red-600 text-white hover:bg-red-700' 
+                              : 'bg-white text-gray-800 hover:bg-gray-100'
+                          } ${favoritesLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
-                          {isFavorite ? <Heart className="w-5 h-5 fill-current" /> : <HeartOff className="w-5 h-5" />}
+                          {isFavorite ? (
+                            <Heart className="w-5 h-5 fill-current" />
+                          ) : (
+                            <HeartOff className="w-5 h-5" />
+                          )}
                         </button>
                       )}
                     </div>
@@ -262,7 +330,7 @@ const fetchFavorites = async () => {
                 <p className="text-gray-500 text-lg">No tours found matching your criteria.</p>
                 <button
                   onClick={resetFilters}
-                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                 >
                   Clear Filters
                 </button>
@@ -271,17 +339,23 @@ const fetchFavorites = async () => {
           </div>
 
           {/* Pagination */}
-          <div className="flex justify-center gap-2">
-            {[...Array(totalPages)].map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentPage(index + 1)}
-                className={`px-3 py-1 border rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-blue-100'}`}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
+          {totalPages > 1 && (
+            <div className="flex justify-center gap-2">
+              {[...Array(totalPages)].map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentPage(index + 1)}
+                  className={`px-3 py-1 border rounded transition-colors ${
+                    currentPage === index + 1 
+                      ? 'bg-blue-500 text-white border-blue-500' 
+                      : 'bg-white text-gray-700 hover:bg-blue-100 border-gray-300'
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>
