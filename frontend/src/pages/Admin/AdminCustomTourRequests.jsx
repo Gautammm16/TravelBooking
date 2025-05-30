@@ -8,7 +8,7 @@ const AdminCustomTourRequests = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const requestsPerPage = 10; // You can change the number of requests per page
+  const requestsPerPage = 10;
 
   const fetchRequests = async () => {
     try {
@@ -93,11 +93,12 @@ const AdminCustomTourRequests = () => {
   }
 
   return (
-    <div className="flex">
+    <div className="flex flex-col md:flex-row min-h-screen">
       <AdminNavbar />
-      <div className="flex-1 p-8">
-        <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">Custom Tour Requests</h1>
+      
+      <div className="flex-1 p-4 md:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6">Custom Tour Requests</h1>
           
           {requests.length === 0 ? (
             <div className="bg-white rounded-lg shadow p-6 text-center">
@@ -109,59 +110,59 @@ const AdminCustomTourRequests = () => {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Group Size</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Budget</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Duration</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Group Size</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">Budget</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {currentRequests.map((request) => (
-                      <tr key={request._id}>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                      <tr key={request._id} className="hover:bg-gray-50">
+                        <td className="px-3 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div>
                               <div className="text-sm font-medium text-gray-900">
                                 {request.user?.firstName || 'N/A'}
                               </div>
-                              <div className="text-sm text-gray-500">
+                              <div className="text-xs text-gray-500 truncate max-w-[120px] md:max-w-none">
                                 {request.user?.email || ''}
                               </div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {request.destination}
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <span className="line-clamp-1">{request.destination}</span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
                           {request.duration} days
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
                           {request.groupSize}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
                           ${request.budget}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 py-4 whitespace-nowrap">
                           <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColors[request.status] || 'bg-gray-100 text-gray-800'}`}>
                             {request.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-3 py-4 whitespace-nowrap text-sm font-medium">
                           {request.status === 'pending' && (
-                            <div className="space-x-2">
+                            <div className="flex flex-col xs:flex-row gap-1 xs:gap-2">
                               <button
                                 onClick={() => handleStatusChange(request._id, 'approved')}
-                                className="text-green-600 hover:text-green-900"
+                                className="text-green-600 hover:text-green-900 text-xs xs:text-sm"
                               >
                                 Approve
                               </button>
                               <button
                                 onClick={() => handleStatusChange(request._id, 'rejected')}
-                                className="text-red-600 hover:text-red-900"
+                                className="text-red-600 hover:text-red-900 text-xs xs:text-sm"
                               >
                                 Reject
                               </button>
@@ -175,31 +176,33 @@ const AdminCustomTourRequests = () => {
               </div>
 
               {/* Pagination Controls */}
-              <div className="flex justify-center items-center p-4 space-x-2">
-                <button
-                  onClick={prevPage}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
-                >
-                  Prev
-                </button>
-                {[...Array(totalPages)].map((_, index) => (
+              {totalPages > 1 && (
+                <div className="flex flex-wrap justify-center items-center p-4 gap-2">
                   <button
-                    key={index + 1}
-                    onClick={() => paginate(index + 1)}
-                    className={`px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                    onClick={prevPage}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
                   >
-                    {index + 1}
+                    Prev
                   </button>
-                ))}
-                <button
-                  onClick={nextPage}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
-                >
-                  Next
-                </button>
-              </div>
+                  {[...Array(totalPages)].map((_, index) => (
+                    <button
+                      key={index + 1}
+                      onClick={() => paginate(index + 1)}
+                      className={`px-3 py-1 text-sm rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                  <button
+                    onClick={nextPage}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

@@ -79,55 +79,97 @@ const AdminManageBookings = () => {
 
   const renderPagination = () => {
     const buttons = [];
+    const maxVisiblePages = 5; // Maximum number of visible page buttons
 
-    // Prev Button
+    // Always show Prev button
     buttons.push(
       <button
         key="prev"
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+        className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
       >
         Prev
       </button>
     );
 
-    // Page Numbers
-    for (let i = 1; i <= totalPages; i++) {
+    // Show first page and ellipsis if needed
+    if (currentPage > Math.floor(maxVisiblePages / 2) + 1) {
+      buttons.push(
+        <button
+          key={1}
+          onClick={() => handlePageChange(1)}
+          className={`px-3 py-1 text-sm rounded ${currentPage === 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+        >
+          1
+        </button>
+      );
+      if (currentPage > Math.floor(maxVisiblePages / 2) + 2) {
+        buttons.push(<span key="left-ellipsis" className="px-2 py-1">...</span>);
+      }
+    }
+
+    // Calculate range of pages to show
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    // Adjust if we're at the end
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    // Show page numbers
+    for (let i = startPage; i <= endPage; i++) {
       buttons.push(
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`px-3 py-1 rounded ${currentPage === i ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+          className={`px-3 py-1 text-sm rounded ${currentPage === i ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
         >
           {i}
         </button>
       );
     }
 
-    // Next Button
+    // Show last page and ellipsis if needed
+    if (currentPage < totalPages - Math.floor(maxVisiblePages / 2)) {
+      if (currentPage < totalPages - Math.floor(maxVisiblePages / 2) - 1) {
+        buttons.push(<span key="right-ellipsis" className="px-2 py-1">...</span>);
+      }
+      buttons.push(
+        <button
+          key={totalPages}
+          onClick={() => handlePageChange(totalPages)}
+          className={`px-3 py-1 text-sm rounded ${currentPage === totalPages ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+        >
+          {totalPages}
+        </button>
+      );
+    }
+
+    // Always show Next button
     buttons.push(
       <button
         key="next"
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+        className="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
       >
         Next
       </button>
     );
 
-    return <div className="flex justify-center mt-6 gap-2">{buttons}</div>;
+    return <div className="flex flex-wrap justify-center gap-2">{buttons}</div>;
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
       <AdminNavbar />
 
-      <div className="flex-1 p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Manage Bookings</h2>
-          <div className="text-gray-600">
+      <div className="flex-1 p-4 md:p-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 md:mb-6 gap-4">
+          <h2 className="text-xl md:text-2xl font-bold">Manage Bookings</h2>
+          <div className="text-sm md:text-base text-gray-600">
             Showing {(currentPage - 1) * bookingsPerPage + 1}-
             {Math.min(currentPage * bookingsPerPage, totalBookings)} of {totalBookings} bookings
           </div>
@@ -139,50 +181,60 @@ const AdminManageBookings = () => {
           </div>
         ) : (
           <>
-            <div className="overflow-x-auto mb-6">
-              <table className="min-w-full bg-white rounded-lg shadow">
+            <div className="overflow-x-auto border rounded-lg shadow">
+              <table className="min-w-full bg-white">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tour</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tour</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">User</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {bookings.length > 0 ? (
                     bookings.map(booking => (
                       <tr key={booking._id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 py-4">
                           <div className="flex items-center">
                             {booking.tour?.imageCover && (
-                              <div className="flex-shrink-0 h-10 w-10">
+                              <div className="flex-shrink-0 h-8 w-8 md:h-10 md:w-10">
                                 <img
-                                  className="h-10 w-10 rounded-full object-cover"
+                                  className="h-8 w-8 md:h-10 md:w-10 rounded-full object-cover"
                                   src={booking.tour.imageCover}
                                   alt={booking.tour.name}
                                 />
                               </div>
                             )}
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{booking.tour?.name || 'N/A'}</div>
-                              <div className="text-sm text-gray-500">{booking.tour?.duration || 'N/A'} days</div>
+                            <div className="ml-2 md:ml-4">
+                              <div className="text-xs md:text-sm font-medium text-gray-900 line-clamp-1">
+                                {booking.tour?.name || 'N/A'}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {booking.tour?.duration || 'N/A'} days
+                              </div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">{getUserFirstName(booking.user)}</div>
-                          <div className="text-sm text-gray-500">{booking.user?.email || 'N/A'}</div>
+                        <td className="px-3 py-4 hidden sm:table-cell">
+                          <div className="text-xs md:text-sm text-gray-900">
+                            {getUserFirstName(booking.user)}
+                          </div>
+                          <div className="text-xs text-gray-500 truncate max-w-[120px] md:max-w-none">
+                            {booking.user?.email || 'N/A'}
+                          </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${booking.price}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex space-x-2">
+                        <td className="px-3 py-4 text-xs md:text-sm text-gray-500">
+                          ${booking.price}
+                        </td>
+                        <td className="px-3 py-4">
+                          <div className="flex flex-wrap gap-1">
                             {['pending', 'confirmed', 'cancelled'].map(status => (
                               <button
                                 key={status}
                                 onClick={() => handleStatusChange(booking._id, status)}
-                                className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                className={`px-2 py-1 rounded-full text-xs ${
                                   booking.status === status
                                     ? {
                                         pending: 'bg-yellow-500 text-white',
@@ -197,7 +249,7 @@ const AdminManageBookings = () => {
                             ))}
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td className="px-3 py-4 text-right text-xs md:text-sm font-medium">
                           <button
                             onClick={() => handleDeleteBooking(booking._id)}
                             className="text-red-600 hover:text-red-900"
@@ -218,7 +270,11 @@ const AdminManageBookings = () => {
               </table>
             </div>
 
-            {totalPages > 1 && renderPagination()}
+            {totalPages > 1 && (
+              <div className="mt-4 md:mt-6">
+                {renderPagination()}
+              </div>
+            )}
           </>
         )}
       </div>

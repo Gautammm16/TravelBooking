@@ -257,7 +257,7 @@ const fetchRecentBookings = async () => {
                           <h4 className="font-medium text-gray-900">{booking.tour?.name || 'Tour not available'}</h4>
                           <div className="flex items-center mt-1 text-sm text-gray-500">
                             <FiUser className="mr-1" />
-                            <span>{booking.user?.firstName || 'User not available'}</span>
+                            <span>{booking.user?.firstname || 'User not available'}</span>
                           </div>
                         </div>
                         <span className="text-sm font-medium text-indigo-600">
