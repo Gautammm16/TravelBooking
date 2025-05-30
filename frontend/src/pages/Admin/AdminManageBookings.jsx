@@ -14,16 +14,21 @@ const AdminManageBookings = () => {
   useEffect(() => {
     const fetchBookings = async () => {
       try {
+        setLoading(true);
         const { data } = await api.get(`/v1/bookings?page=${currentPage}&limit=${bookingsPerPage}`);
-        setBookings(data.data.bookings);
-        setTotalBookings(data.results);
-        setTotalPages(Math.ceil(data.results / bookingsPerPage));
-        setLoading(false);
+        const bookingsData = data.data?.bookings || data.bookings || [];
+        const totalResults = data.total || data.results || 0;
+
+        setBookings(bookingsData);
+        setTotalBookings(totalResults);
+        setTotalPages(Math.ceil(totalResults / bookingsPerPage));
       } catch (err) {
         console.error('Error fetching bookings:', err);
+      } finally {
         setLoading(false);
       }
     };
+
     fetchBookings();
   }, [currentPage]);
 
@@ -39,21 +44,22 @@ const AdminManageBookings = () => {
   };
 
   const handleDeleteBooking = async (bookingId) => {
-    if (!window.confirm('Are you sure you want to delete this booking?')) {
-      return;
-    }
+    if (!window.confirm('Are you sure you want to delete this booking?')) return;
 
     try {
       await api.delete(`/v1/bookings/${bookingId}`);
-      setBookings(bookings.filter(booking => booking._id !== bookingId));
-      setTotalBookings(totalBookings - 1);
-      setTotalPages(Math.ceil((totalBookings - 1) / bookingsPerPage));
-      
-      // If we deleted the last item on the page, go back one page
-      if (bookings.length === 1 && currentPage > 1) {
+      const updatedTotal = totalBookings - 1;
+      const updatedBookings = bookings.filter(booking => booking._id !== bookingId);
+
+      setBookings(updatedBookings);
+      setTotalBookings(updatedTotal);
+      const newTotalPages = Math.ceil(updatedTotal / bookingsPerPage);
+      setTotalPages(newTotalPages);
+
+      if (updatedBookings.length === 0 && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       }
-      
+
       alert('Booking deleted successfully');
     } catch (err) {
       alert('Error deleting booking: ' + err.message);
@@ -66,109 +72,153 @@ const AdminManageBookings = () => {
   };
 
   const handlePageChange = (newPage) => {
-    if (newPage > 0 && newPage <= totalPages) {
+    if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
   };
 
+  const renderPagination = () => {
+    const buttons = [];
+
+    // Prev Button
+    buttons.push(
+      <button
+        key="prev"
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+      >
+        Prev
+      </button>
+    );
+
+    // Page Numbers
+    for (let i = 1; i <= totalPages; i++) {
+      buttons.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`px-3 py-1 rounded ${currentPage === i ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    // Next Button
+    buttons.push(
+      <button
+        key="next"
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
+      >
+        Next
+      </button>
+    );
+
+    return <div className="flex justify-center mt-6 gap-2">{buttons}</div>;
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
-      {/* Sidebar */}
       <AdminNavbar />
 
-      {/* Main Content */}
       <div className="flex-1 p-6">
-        <h2 className="text-2xl font-bold mb-6">Manage Bookings</h2>
-        
-        <div className="mb-4">
-          <p className="text-gray-600">Total Bookings: {totalBookings}</p>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold">Manage Bookings</h2>
+          <div className="text-gray-600">
+            Showing {(currentPage - 1) * bookingsPerPage + 1}-
+            {Math.min(currentPage * bookingsPerPage, totalBookings)} of {totalBookings} bookings
+          </div>
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center">
-            <ThreeDots
-              height="50"
-              width="50"
-              radius="9"
-              color="#3b82f6"
-              ariaLabel="three-dots-loading"
-              visible={true}
-            />
+          <div className="flex justify-center items-center h-64">
+            <ThreeDots height="50" width="50" color="#3b82f6" visible />
           </div>
         ) : (
           <>
             <div className="overflow-x-auto mb-6">
-              <table className="min-w-full bg-white rounded shadow">
-                <thead className="bg-gray-50">
+              <table className="min-w-full bg-white rounded-lg shadow">
+                <thead className="bg-gray-100">
                   <tr>
-                    <th className="px-6 py-3 text-left">Tour</th>
-                    <th className="px-6 py-3 text-left">User</th>
-                    <th className="px-6 py-3 text-left">Price</th>
-                    <th className="px-6 py-3 text-left">Status</th>
-                    <th className="px-6 py-3 text-left">Actions</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tour</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {bookings.map(booking => (
-                    <tr key={booking._id} className="border-t">
-                      <td className="px-6 py-4">{booking.tour?.name}</td>
-                      <td className="px-6 py-4">{getUserFirstName(booking.user)}</td>
-                      <td className="px-6 py-4">${booking.price}</td>
-                      <td className="px-6 py-4">
-                        <select
-                          value={booking.status}
-                          onChange={(e) => handleStatusChange(booking._id, e.target.value)}
-                          className="border p-1 rounded"
-                        >
-                          <option value="pending">Pending</option>
-                          <option value="confirmed">Confirmed</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>
-                      </td>
-                      <td className="px-6 py-4">
-                        <button 
-                          onClick={() => handleDeleteBooking(booking._id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          Delete
-                        </button>
+                <tbody className="divide-y divide-gray-200">
+                  {bookings.length > 0 ? (
+                    bookings.map(booking => (
+                      <tr key={booking._id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            {booking.tour?.imageCover && (
+                              <div className="flex-shrink-0 h-10 w-10">
+                                <img
+                                  className="h-10 w-10 rounded-full object-cover"
+                                  src={booking.tour.imageCover}
+                                  alt={booking.tour.name}
+                                />
+                              </div>
+                            )}
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">{booking.tour?.name || 'N/A'}</div>
+                              <div className="text-sm text-gray-500">{booking.tour?.duration || 'N/A'} days</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{getUserFirstName(booking.user)}</div>
+                          <div className="text-sm text-gray-500">{booking.user?.email || 'N/A'}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${booking.price}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex space-x-2">
+                            {['pending', 'confirmed', 'cancelled'].map(status => (
+                              <button
+                                key={status}
+                                onClick={() => handleStatusChange(booking._id, status)}
+                                className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                  booking.status === status
+                                    ? {
+                                        pending: 'bg-yellow-500 text-white',
+                                        confirmed: 'bg-green-500 text-white',
+                                        cancelled: 'bg-red-500 text-white',
+                                      }[status]
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                }`}
+                              >
+                                {status.charAt(0).toUpperCase() + status.slice(1)}
+                              </button>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <button
+                            onClick={() => handleDeleteBooking(booking._id)}
+                            className="text-red-600 hover:text-red-900"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="text-center py-6 text-gray-500">
+                        No bookings found
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
 
-            {/* Pagination */}
-             <div className="flex justify-center mt-6 space-x-2">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-              >
-                Prev
-              </button>
-              {[...Array(totalPages)].map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => handlePageChange(index + 1)}
-                  className={`px-3 py-1 rounded ${
-                    currentPage === index + 1
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              ))}
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
+            {totalPages > 1 && renderPagination()}
           </>
         )}
       </div>

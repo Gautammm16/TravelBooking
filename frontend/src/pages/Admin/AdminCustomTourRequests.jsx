@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import AdminNavbar from '../../components/admin/AdminNavbar'; // Make sure this path is correct
+import AdminNavbar from '../../components/admin/AdminNavbar';
 
 const AdminCustomTourRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const requestsPerPage = 10; // You can change the number of requests per page
 
   const fetchRequests = async () => {
     try {
@@ -45,12 +47,22 @@ const AdminCustomTourRequests = () => {
         }
       );
       toast.success(`Request ${status} successfully`);
-      fetchRequests(); // Refresh the list after update
+      fetchRequests();
     } catch (err) {
       console.error('Error updating request:', err);
       toast.error(err.response?.data?.message || 'Failed to update request');
     }
   };
+
+  // Pagination Logic
+  const indexOfLastRequest = currentPage * requestsPerPage;
+  const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
+  const currentRequests = requests.slice(indexOfFirstRequest, indexOfLastRequest);
+  const totalPages = Math.ceil(requests.length / requestsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
 
   const statusColors = {
     pending: 'bg-yellow-100 text-yellow-800',
@@ -107,13 +119,13 @@ const AdminCustomTourRequests = () => {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {requests.map((request) => (
+                    {currentRequests.map((request) => (
                       <tr key={request._id}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div>
                               <div className="text-sm font-medium text-gray-900">
-                                {request.user?.name || 'N/A'}
+                                {request.user?.firstName || 'N/A'}
                               </div>
                               <div className="text-sm text-gray-500">
                                 {request.user?.email || ''}
@@ -160,6 +172,33 @@ const AdminCustomTourRequests = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Pagination Controls */}
+              <div className="flex justify-center items-center p-4 space-x-2">
+                <button
+                  onClick={prevPage}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
+                >
+                  Prev
+                </button>
+                {[...Array(totalPages)].map((_, index) => (
+                  <button
+                    key={index + 1}
+                    onClick={() => paginate(index + 1)}
+                    className={`px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+                <button
+                  onClick={nextPage}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
+                >
+                  Next
+                </button>
               </div>
             </div>
           )}

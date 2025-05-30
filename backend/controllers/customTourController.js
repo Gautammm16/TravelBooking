@@ -27,7 +27,7 @@ export const getUserRequests = async (req, res) => {
 
 export const getAllRequests = async (req, res) => {
   try {
-    const requests = await CustomTourRequest.find().populate('user', 'name email');
+    const requests = await CustomTourRequest.find().populate('user', 'firstName email');
     res.status(200).json({ success: true, requests });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
