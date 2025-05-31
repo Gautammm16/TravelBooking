@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import AdminNavbar from '../../components/admin/AdminNavbar';
@@ -55,14 +55,45 @@ const AdminCustomTourRequests = () => {
   };
 
   // Pagination Logic
-  const indexOfLastRequest = currentPage * requestsPerPage;
-  const indexOfFirstRequest = indexOfLastRequest - requestsPerPage;
-  const currentRequests = requests.slice(indexOfFirstRequest, indexOfLastRequest);
-  const totalPages = Math.ceil(requests.length / requestsPerPage);
+  const totalPages = useMemo(() => Math.ceil(requests.length / requestsPerPage), [requests]);
+  const currentRequests = useMemo(() => {
+    const start = (currentPage - 1) * requestsPerPage;
+    return requests.slice(start, start + requestsPerPage);
+  }, [requests, currentPage]);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   const nextPage = () => setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
+
+  const renderPagination = () => (
+    <div className="flex flex-wrap justify-center items-center p-4 gap-2">
+      <button
+        onClick={prevPage}
+        disabled={currentPage === 1}
+        className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
+      >
+        Prev
+      </button>
+      {Array.from({ length: totalPages }, (_, i) => (
+        <button
+          key={i + 1}
+          onClick={() => paginate(i + 1)}
+          className={`px-3 py-1 text-sm rounded ${currentPage === i + 1
+            ? 'bg-blue-500 text-white'
+            : 'bg-gray-200 hover:bg-gray-300'}`}
+        >
+          {i + 1}
+        </button>
+      ))}
+      <button
+        onClick={nextPage}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
+      >
+        Next
+      </button>
+    </div>
+  );
 
   const statusColors = {
     pending: 'bg-yellow-100 text-yellow-800',
@@ -176,33 +207,7 @@ const AdminCustomTourRequests = () => {
               </div>
 
               {/* Pagination Controls */}
-              {totalPages > 1 && (
-                <div className="flex flex-wrap justify-center items-center p-4 gap-2">
-                  <button
-                    onClick={prevPage}
-                    disabled={currentPage === 1}
-                    className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
-                  >
-                    Prev
-                  </button>
-                  {[...Array(totalPages)].map((_, index) => (
-                    <button
-                      key={index + 1}
-                      onClick={() => paginate(index + 1)}
-                      className={`px-3 py-1 text-sm rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-                    >
-                      {index + 1}
-                    </button>
-                  ))}
-                  <button
-                    onClick={nextPage}
-                    disabled={currentPage === totalPages}
-                    className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded disabled:opacity-50"
-                  >
-                    Next
-                  </button>
-                </div>
-              )}
+              {totalPages > 1 && renderPagination()}
             </div>
           )}
         </div>

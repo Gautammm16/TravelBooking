@@ -257,7 +257,7 @@ const fetchRecentBookings = async () => {
                           <h4 className="font-medium text-gray-900">{booking.tour?.name || 'Tour not available'}</h4>
                           <div className="flex items-center mt-1 text-sm text-gray-500">
                             <FiUser className="mr-1" />
-                            <span>{booking.user?.firstname || 'User not available'}</span>
+                            <span>{booking.user?.firstName || 'User not available'}</span>
                           </div>
                         </div>
                         <span className="text-sm font-medium text-indigo-600">
@@ -286,57 +286,58 @@ const fetchRecentBookings = async () => {
           </div>
 
           {/* Monthly Stats Chart */}
-          <div className="bg-white shadow rounded-xl p-4 md:p-6 lg:col-span-2">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg md:text-xl font-semibold text-gray-800">Monthly Tour Creation</h3>
-              {loading && <LoadingSpinner size="sm" />}
-            </div>
-            <div className="h-64 md:h-80">
-              {loading ? (
-                <div className="flex justify-center items-center h-full">
-                  <LoadingSpinner size="md" />
-                </div>
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={monthlyStats}>
-                    <defs>
-                      <linearGradient id="colorTours" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                    <XAxis 
-                      dataKey="month" 
-                      tick={{ fill: COLORS.muted }}
-                      axisLine={{ stroke: COLORS.muted }}
-                    />
-                    <YAxis 
-                      allowDecimals={false} 
-                      tick={{ fill: COLORS.muted }}
-                      axisLine={{ stroke: COLORS.muted }}
-                    />
-                    <Tooltip 
-                      contentStyle={{
-                        backgroundColor: '#fff',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '0.5rem',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                      }}
-                    />
-                    <Area 
-                      type="monotone" 
-                      dataKey="tours" 
-                      name="Tours Created" 
-                      stroke={COLORS.primary} 
-                      fillOpacity={1} 
-                      fill="url(#colorTours)" 
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              )}
-            </div>
-          </div>
+        
+<div className="bg-white shadow rounded-xl p-4 md:p-6 lg:col-span-2">
+  <div className="flex justify-between items-center mb-4">
+    <h3 className="text-lg md:text-xl font-semibold text-gray-800">Monthly Tour Creation</h3>
+    {loading && <LoadingSpinner size="sm" />}
+  </div>
+  <div className="h-64 md:h-80">
+    {loading ? (
+      <div className="flex justify-center items-center h-full">
+        <LoadingSpinner size="md" />
+      </div>
+    ) : (
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={monthlyStats} margin={{ top: 10, right: 30, left: 0, bottom: 5 }}>
+          <defs>
+            <linearGradient id="barColor" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={COLORS.primary} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={COLORS.primary} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+          <XAxis
+            dataKey="month"
+            tick={{ fill: COLORS.muted }}
+            axisLine={{ stroke: COLORS.muted }}
+          />
+          <YAxis
+            allowDecimals={false}
+            tick={{ fill: COLORS.muted }}
+            axisLine={{ stroke: COLORS.muted }}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: '#fff',
+              border: '1px solid #e5e7eb',
+              borderRadius: '0.5rem',
+              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+            }}
+          />
+          <Bar
+            dataKey="tours"
+            name="Tours Created"
+            fill="url(#barColor)"
+            radius={[6, 6, 0, 0]}
+            barSize={40}
+          />
+        </BarChart>
+      </ResponsiveContainer>
+    )}
+  </div>
+</div>
+
         </div>
 
         {/* Additional Charts Section */}
