@@ -461,60 +461,60 @@ export const logout = (req, res) => {
 };
 
 
-export const updateUser = async (req, res, next) => {
-  const disallowedFields = [
-    'password', 'passwordConfirm', 'role', 'verificationToken',
-    'verificationTokenExpires', 'passwordResetToken', 'passwordResetExpires',
-    'bookings', 'wishlist', 'active', 'createdAt', 'socialMedia'
-  ];
+// export const updateUser = async (req, res, next) => {
+//   const disallowedFields = [
+//     'password', 'passwordConfirm', 'role', 'verificationToken',
+//     'verificationTokenExpires', 'passwordResetToken', 'passwordResetExpires',
+//     'bookings', 'wishlist', 'active', 'createdAt', 'socialMedia'
+//   ];
 
-  const fieldMap = {
-    firstname: 'firstName',
-    lastname: 'lastName',
-    email: 'email',
-    phone: 'phoneNumber',
-    dob: 'dob',
-    gender: 'gender',
-    address: 'address',
-    preferences: 'preferences'
-  };
+//   const fieldMap = {
+//     firstname: 'firstName',
+//     lastname: 'lastName',
+//     email: 'email',
+//     phone: 'phoneNumber',
+//     dob: 'dob',
+//     gender: 'gender',
+//     address: 'address',
+//     preferences: 'preferences'
+//   };
 
-  const updateData = {};
-  Object.keys(req.body).forEach(key => {
-    const normalizedKey = fieldMap[key] || key;
-    if (!disallowedFields.includes(normalizedKey)) {
-      updateData[normalizedKey] = req.body[key];
-    }
-  });
+//   const updateData = {};
+//   Object.keys(req.body).forEach(key => {
+//     const normalizedKey = fieldMap[key] || key;
+//     if (!disallowedFields.includes(normalizedKey)) {
+//       updateData[normalizedKey] = req.body[key];
+//     }
+//   });
 
-  if (req.file) {
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        { folder: 'users' },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-      stream.end(req.file.buffer);
-    });
-    updateData.avatar = result.secure_url;
-  }
+//   if (req.file) {
+//     const result = await new Promise((resolve, reject) => {
+//       const stream = cloudinary.uploader.upload_stream(
+//         { folder: 'users' },
+//         (error, result) => {
+//           if (error) reject(error);
+//           else resolve(result);
+//         }
+//       );
+//       stream.end(req.file.buffer);
+//     });
+//     updateData.avatar = result.secure_url;
+//   }
 
-  const updatedUser = await User.findByIdAndUpdate(req.params.id, updateData, {
-    new: true,
-    runValidators: true
-  });
+//   const updatedUser = await User.findByIdAndUpdate(req.params.id, updateData, {
+//     new: true,
+//     runValidators: true
+//   });
 
-  if (!updatedUser) {
-    return next(new AppError('No user found with that ID', 404));
-  }
+//   if (!updatedUser) {
+//     return next(new AppError('No user found with that ID', 404));
+//   }
 
-  res.status(200).json({
-    status: 'success',
-    data: { user: updatedUser }
-  });
-};
+//   res.status(200).json({
+//     status: 'success',
+//     data: { user: updatedUser }
+//   });
+// };
 
 // export const getMe = async (req, res, next) => {
 //   console.log('getMe called, req.user:', req.user); // Debug log
@@ -560,6 +560,102 @@ export const updateUser = async (req, res, next) => {
 //   }
 // };
 
+
+export const updateUser = async (req, res, next) => {
+  const disallowedFields = [
+    'password', 'passwordConfirm', 'role', 'verificationToken',
+    'verificationTokenExpires', 'passwordResetToken', 'passwordResetExpires',
+    'bookings', 'wishlist', 'active', 'createdAt', 'socialMedia'
+  ];
+
+  const fieldMap = {
+    firstname: 'firstName',
+    lastname: 'lastName',
+    email: 'email',
+    phone: 'phoneNumber',
+    dob: 'dob',
+    gender: 'gender',
+    address: 'address',
+    preferences: 'preferences'
+  };
+
+  const updateData = {};
+  
+  // Handle regular fields
+  Object.keys(req.body).forEach(key => {
+    const normalizedKey = fieldMap[key] || key;
+    if (!disallowedFields.includes(normalizedKey)) {
+      updateData[normalizedKey] = req.body[key];
+    }
+  });
+
+  // Handle nested preferences
+  if (req.body.preferences) {
+    try {
+      updateData.preferences = typeof req.body.preferences === 'string' 
+        ? JSON.parse(req.body.preferences)
+        : req.body.preferences;
+    } catch (err) {
+      return next(new AppError('Invalid preferences format', 400));
+    }
+  }
+
+  // Handle favorites array (convert string IDs to ObjectIds)
+  if (req.body.favorites) {
+    try {
+      // First parse the JSON string if it's a string
+      const favoritesArray = typeof req.body.favorites === 'string'
+        ? JSON.parse(req.body.favorites)
+        : req.body.favorites;
+      
+      // Then convert each ID to ObjectId
+      updateData.favorites = favoritesArray.map(id => mongoose.Types.ObjectId(id));
+    } catch (err) {
+      return next(new AppError('Invalid favorites format', 400));
+    }
+  }
+
+  // Handle file upload
+  if (req.file) {
+    try {
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: 'users' },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
+      });
+      updateData.avatar = result.secure_url;
+    } catch (err) {
+      return next(new AppError('Error uploading image', 500));
+    }
+  }
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+      runValidators: true
+    });
+
+    if (!updatedUser) {
+      return next(new AppError('No user found with that ID', 404));
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: { user: updatedUser }
+    });
+  } catch (err) {
+    // Handle CastError specifically
+    if (err.name === 'CastError') {
+      return next(new AppError(`Invalid data format for ${err.path}: ${err.value}`, 400));
+    }
+    next(err);
+  }
+};
 
 
 export const getMe = async (req, res, next) => {

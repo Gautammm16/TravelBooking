@@ -80,4 +80,22 @@ export const deleteUser = async (userId) => {
   return response.data;
 };
 
+
+export const updateUserData = async (id, data) => {
+  try {
+    const res = await API.patch(`/v1/users/update-me/${id}`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return res.data;
+  } catch (err) {
+    // Enhance error information before throwing
+    const error = new Error(err.response?.data?.message || 'Failed to update user');
+    error.status = err.response?.status;
+    error.data = err.response?.data;
+    throw error;
+  }
+};
+
 export default API;
