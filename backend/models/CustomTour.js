@@ -14,7 +14,7 @@ const customTourRequestSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  preferredDates: [Date],
+  preferredDates: [{ type: Date }],
   groupSize: {
     type: Number,
     required: true

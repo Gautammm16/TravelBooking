@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 export const sendOTPEmail = async (email, otp) => {
   try {
     await transporter.sendMail({
-      from: `"Your App Name" <${process.env.EMAIL_FROM}>`,
+      from: `"Travel Agency" <${process.env.EMAIL_FROM}>`,
       to: email,
       subject: 'Your Verification OTP',
       html: `
